@@ -22,4 +22,4 @@ async def main():
         await login.LogIN()
         await browser.close()
 
-asyncio.run(main()) 
+asyncio.run(main())

@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
 from models.HomePage import HomePage
-from models.Registration import Registration
+from models.registration import Registration
 from models.Login import Login
 import asyncio
 

@@ -2,6 +2,7 @@ from playwright.async_api import async_playwright
 from models.HomePage import HomePage
 from models.registration import Registration
 from models.Login import Login
+from models.Product import Product
 import asyncio
 
 URL = "https://automation-portal-bootcamp.vercel.app"
@@ -13,13 +14,16 @@ async def main():
 
         home = HomePage(page)
         await home.popup()
-        await home.registerHome()
+        #await home.registerHome()
+        await home.productHome()
 
-        registration = Registration(page)
-        await registration.register()
+        product = Product(page)
+        await product.addCart()
+        #registration = Registration(page)
+        #await registration.register()
 
-        login = Login(page)
-        await login.LogIN()
-        await browser.close()
+        #login = Login(page)
+        #await login.LogIN()
+        #await browser.close()
 
 asyncio.run(main())

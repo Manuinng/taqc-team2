@@ -24,6 +24,6 @@ async def main():
 
         #login = Login(page)
         #await login.LogIN()
-        #await browser.close()
+        await browser.close()
 
 asyncio.run(main())

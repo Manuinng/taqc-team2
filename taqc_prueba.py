@@ -18,6 +18,7 @@ async def main():
         await home.productHome()
 
         product = Product(page)
+        await product.viewCompare()
         await product.addCart()
         #registration = Registration(page)
         #await registration.register()

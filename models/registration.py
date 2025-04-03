@@ -22,7 +22,7 @@ class Registration:
 
         await self.Fname.fill("first_name")
         await self.Lname.fill("last_name")
-        await self.Email.fill("email@1")
+        await self.Email.fill("email@4")
         await self.Password.fill("pass")
         await asyncio.sleep(5)
         await self.buttonR.click()

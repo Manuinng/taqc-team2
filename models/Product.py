@@ -13,10 +13,10 @@ class Product:
 
     async def addCart(self):
         await self.btnColor.click()
-        await self.page.wait_for_timeout(5000)
+        await self.page.wait_for_timeout(2000)
         await self.btnSize.click()
-        await self.page.wait_for_timeout(5000)
+        await self.page.wait_for_timeout(2000)
         await self.inputQuantity.fill("25")
-        await self.page.wait_for_timeout(5000)
+        await self.page.wait_for_timeout(2000)
         await self.btnAdd.click()
-        await self.page.wait_for_timeout(5000)
+        await self.page.wait_for_timeout(2000)

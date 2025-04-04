@@ -12,6 +12,27 @@ class Product:
         self.inputQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > input[type=text]")
         self.btnCompare = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-extra-link > a:nth-child(1)")
 
+    async def selectColor(self):
+        await self.btnColor.click()
+    
+    async def selectSize(self):
+        await self.btnSize.click()
+
+    async def selectMore(self):
+        await self.moreQuantity.click()
+
+    async def selectLess(self):
+        await self.lessQuantity.click()
+
+    async def inputSection(self):
+        await self.inputQuantity.fill("25")
+
+    async def addSelection(self):
+        await self.btnAdd.click()
+
+    async def compareSection(self):
+        await self.btnCompare.click()
+    
     async def addCart(self):
         await self.btnColor.click()
         await self.page.wait_for_timeout(2000)

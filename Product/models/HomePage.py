@@ -17,7 +17,7 @@ class HomePage:
         await self.page.wait_for_timeout(1000)
         await self.pop.click()
         await self.page.wait_for_selector("#newsletterPopup", state="hidden")
-    
+
     async def registerHome(self):
         await self.account.click()
         await self.page.wait_for_selector("#login")

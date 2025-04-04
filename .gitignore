@@ -1,1 +1,3 @@
 Product/models/__pycache__/
+Product/test/__pycache__/
+.pytest_cache/

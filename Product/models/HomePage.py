@@ -10,7 +10,7 @@ class HomePage:
         self.btnRegister = page.locator("a[href='/register']")
         self.btnOut = page.locator("#register > div > div > div.header > span")
         self.account = page.locator(".nav-account")
-        self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-info > a")
+        #self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-info > a")
 
     async def popup(self):
         await self.page.wait_for_selector("#newsletterPopup", state="visible", timeout=5000)
@@ -32,6 +32,6 @@ class HomePage:
         await self.page.wait_for_selector("#login")
         await self.btnLog.click()
 
-    async def productHome(self):
-        await self.productView.click()
-        await self.page.wait_for_timeout(5000)
+    #async def productHome(self):
+    #    await self.productView.click()
+    #    await self.page.wait_for_timeout(5000)

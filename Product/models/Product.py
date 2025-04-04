@@ -11,10 +11,11 @@ class Product:
         self.btnAdd = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > a.tf-btn.btn-fill.justify-content-center.fw-6.fs-16.flex-grow-1.animate-hover-btn")
         self.inputQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > input[type=text]")
         self.btnCompare = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-extra-link > a:nth-child(1)")
+        self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-info > a")
 
     async def selectColor(self):
         await self.btnColor.click()
-    
+
     async def selectSize(self):
         await self.btnSize.click()
 
@@ -32,8 +33,10 @@ class Product:
 
     async def compareSection(self):
         await self.btnCompare.click()
-    
+
     async def addCart(self):
+        await self.productView.click()
+        await self.page.wait_for_timeout(2000)
         await self.btnColor.click()
         await self.page.wait_for_timeout(2000)
         await self.btnSize.click()

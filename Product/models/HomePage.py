@@ -32,6 +32,6 @@ class HomePage:
         await self.page.wait_for_selector("#login")
         await self.btnLog.click()
 
-    #async def productHome(self):
-    #    await self.productView.click()
-    #    await self.page.wait_for_timeout(5000)
+    async def productHome(self):
+        await self.productView.click()
+        await self.page.wait_for_timeout(5000)

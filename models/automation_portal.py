@@ -1,4 +1,4 @@
-from playwright.async_api import Page
+from config.config import BASE_URL
 
 class AutomationPortal:
     def __init__(self, page):
@@ -6,7 +6,7 @@ class AutomationPortal:
         self.account = page.locator(".nav-account")
 
     async def navigate(self):
-        await self.page.goto("https://automation-portal-bootcamp.vercel.app")
+        await self.page.goto(BASE_URL)
 
     async def close_newsletter_popup(self):
         await self.page.wait_for_selector("#newsletterPopup", state="visible")
@@ -17,11 +17,23 @@ class AutomationPortal:
         await self.page.wait_for_selector("#newsletterPopup", state="hidden")
 
     async def open_login_popup(self):
-        print("Abriendo el popup de login...")
         login_button_selector = ".nav-account .nav-icon-item"
         await self.page.wait_for_selector(login_button_selector, timeout=5000)
         await self.page.wait_for_timeout(2000)
         await self.page.click(login_button_selector)
+
+    async def fill_login_popup(self, email: str, password: str):
+        await self.page.wait_for_timeout(2000)
+        await self.page.fill("div.tf-field input[type='email']", email)
+        await self.page.fill("div.tf-field input[type='password']", password)
+        await self.page.wait_for_timeout(1000)
+
+    async def submit_login_popup(self):
+        login_button_selector = "button:has-text('Log in')"
+        await self.page.wait_for_selector(login_button_selector, timeout=5000)
+        await self.page.wait_for_timeout(2000)
+        await self.page.click(login_button_selector)
+        await self.page.wait_for_url(f"{BASE_URL}/my-account")
 
     async def open_new_customer_popup(self):
         print("Seleccionando 'New Customer'...")
@@ -39,57 +51,57 @@ class AutomationPortal:
         await self.page.wait_for_timeout(1000)
         await self.page.click("body", position={"x": 100, "y": 100})
         await self.page.wait_for_selector("#register", state="hidden")
-        
+
     async def navigate_to_wishlist(self):
         print("Navegando a la wishlist...")
         wishlist_button_selector = ".nav-wishlist .nav-icon-item"
         await self.page.wait_for_selector(wishlist_button_selector, timeout=5000)
         await self.page.wait_for_timeout(1000)
         await self.page.click(wishlist_button_selector)
-        
+
     async def navigate_to_cart(self):
         print("Navegando al carrito...")
         cart_button_selector = ".nav-cart .nav-icon-item"
         await self.page.wait_for_selector(cart_button_selector, timeout=5000)
         await self.page.wait_for_timeout(1000)
         await self.page.click(cart_button_selector)
-    
+
     async def navigate_to_account(self):
         print("Navegando a la cuenta...")
         await self.account.click()
         await self.page.wait_for_timeout(1000)
-    
+
     async def navigate_to_home(self):
         print("Navegando a la home...")
         await self.page.wait_for_timeout(5000)
         await self.page.click("a.logo-header[href='/']")
         await self.page.wait_for_timeout(5000)
-        
+
     async def scroll_down(self):
         print("Scrolling down...")
         await self.page.evaluate("window.scrollBy(0, window.innerHeight)")
         await self.page.wait_for_timeout(2000)
-        
+
     async def quick_add_product(self):
         print("Haciendo hover en el producto y presionando 'Quick Add'...")
         product_selector = ".card-product-wrapper .product-img"
         quick_add_button_selector = ".card-product-wrapper .quick-add"
-        
+
         await self.page.hover(product_selector)
         await self.page.wait_for_timeout(1000)
         await self.page.click(quick_add_button_selector)
         await self.page.wait_for_timeout(2000)
-        
+
     async def quick_view_product(self):
         print("Haciendo hover en el producto y presionando 'Quick View'...")
         product_selector = ".card-product-wrapper .product-img"
         quick_view_button_selector = ".card-product-wrapper .quickview"
-        
+
         await self.page.hover(product_selector)
         await self.page.wait_for_timeout(1000)
         await self.page.click(quick_view_button_selector)
         await self.page.wait_for_timeout(5000)
-        
+
     async def select_product_options_and_add_to_cart(self):
         print("Selecting product options and adding to cart...")
 

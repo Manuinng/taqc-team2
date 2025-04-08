@@ -39,6 +39,7 @@ class Product:
         await self.page.wait_for_timeout(2000)
 
     async def addCart(self, input_test:str):
+        await self.btnColor.wait_for(state='visible')
         await self.btnColor.click()
         await self.page.wait_for_timeout(2000)
         await self.btnSize.click()

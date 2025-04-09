@@ -1,9 +1,10 @@
 import pytest_asyncio
 from playwright.async_api import async_playwright
-from models.Product import Product
-from models.HomePage import HomePage
+from pages.Product import Product
+from pages.HomePage import HomePage
 
 URL = "https://automation-portal-bootcamp.vercel.app"
+
 @pytest_asyncio.fixture(scope="function")
 async def page():
     async with async_playwright() as p:

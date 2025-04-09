@@ -1,4 +1,5 @@
 from playwright.async_api import Page
+from config.data import url
 import asyncio
 
 class HomePage:
@@ -11,6 +12,9 @@ class HomePage:
         self.btnOut = page.locator("#register > div > div > div.header > span")
         self.account = page.locator(".nav-account")
         #self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-info > a")
+
+    async def navigate(self, url):
+        await self.page.goto(url, wait_until="domcontentloaded")
 
     async def popup(self):
         await self.page.wait_for_selector("#newsletterPopup", state="visible", timeout=5000)

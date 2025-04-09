@@ -19,17 +19,17 @@ async def test_fail_NaN_product(product):
     await product.addCart(data.input_Nan)
 
 @pytest.mark.asyncio
-async def test_fail_NaN_product(product):
+async def test_fail_zero_product(product):
     await product.selectProduct()
     await product.addCart(data.input_zero)
 
 @pytest.mark.asyncio
-async def test_fail_NaN_product(product):
+async def test_fail_max_product(product):
     await product.selectProduct()
     await product.addCart(data.input_max)
 
 @pytest.mark.asyncio
-async def test_fail_NaN_product(product):
+async def test_fail_neg_product(product):
     await product.selectProduct()
     await product.addCart(data.input_neg)
 

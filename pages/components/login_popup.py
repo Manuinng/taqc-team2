@@ -8,6 +8,8 @@ class LoginPopup:
         self.password_input = "div.tf-field input[type='password']"
         self.login_button = "button:has-text('Log in')"
         self.close_button = ".icon-close.icon-close-popup"
+        self.new_customer_button_selector = "button.btn-link:has-text('New customer? Create your account')"
+        self.register_button_selector = "a:has-text('Register')"
 
     async def fill_login_popup(self, email: str, password: str):
         await self.page.wait_for_selector(self.email_input)
@@ -22,3 +24,8 @@ class LoginPopup:
     async def close_login_popup(self):
         await self.page.wait_for_selector(self.close_button)
         await self.page.click(self.close_button)
+        
+    async def open_new_customer_popup(self):
+        await self.page.wait_for_selector(self.new_customer_button_selector, timeout=5000)
+        await self.page.wait_for_timeout(1000)
+        await self.page.click(self.new_customer_button_selector)

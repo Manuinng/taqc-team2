@@ -13,25 +13,7 @@ class AutomationPortal:
         close_newsletter = "a:has-text('Not interested')"
         await self.page.wait_for_timeout(1000)
         await self.page.click(close_newsletter)
-        await self.page.wait_for_timeout(2000)
         await self.page.wait_for_selector("#newsletterPopup", state="hidden")
-
-    async def open_new_customer_popup(self):
-        print("Seleccionando 'New Customer'...")
-        new_customer_button_selector = "a[href='#register'][data-bs-toggle='modal']"
-        await self.page.wait_for_selector(new_customer_button_selector, timeout=5000)
-        await self.page.wait_for_timeout(2000)
-        await self.page.click(new_customer_button_selector)
-
-    async def navigate_to_register(self):
-        print("Navegando al formulario de registro...")
-        register_button_selector = "a:has-text('Register')"
-        await self.page.wait_for_selector(register_button_selector, timeout=5000)
-        await self.page.wait_for_timeout(1000)
-        await self.page.click(register_button_selector)
-        await self.page.wait_for_timeout(1000)
-        await self.page.click("body", position={"x": 100, "y": 100})
-        await self.page.wait_for_selector("#register", state="hidden")
 
     async def navigate_to_wishlist(self):
         print("Navegando a la wishlist...")

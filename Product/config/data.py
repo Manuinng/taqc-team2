@@ -9,5 +9,6 @@ class data:
     input_neg = "-1"
     input_zero = "0"
     input_int = 1
+    input_empty = " "
     email = "team2@taqc.com"
     password = "team2"

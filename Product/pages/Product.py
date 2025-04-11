@@ -63,4 +63,6 @@ class Product:
         await self.page.wait_for_timeout(2000)
 
     #async def get_validation_values(self):
-
+    async def get_information_cart(self):
+        cart_product_visible = await self.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
+        return cart_product_visible

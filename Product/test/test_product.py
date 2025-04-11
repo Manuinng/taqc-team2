@@ -36,14 +36,14 @@ async def test_fail_max_product(product):
     await product.selectProduct()
     await product.addCart(data.input_max)
     cart_product_visible = await product.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
-    assert not cart_product_visible, "El producto se agrega aun con cantidades que deberian tocar el maimo de producto disponible."
+    assert not cart_product_visible, "El producto se agrega aun con cantidades que deberian tocar el maximo de producto disponible."
 
 @pytest.mark.asyncio
 async def test_fail_neg_product(product):
     await product.selectProduct()
     await product.addCart(data.input_neg)
-    cart_product_visible = await product.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
-    assert not cart_product_visible, "El producto no debería estar en el carrito al usar una cantidad negativa."
+    await product.get_information_cart()
+    assert not product.cart_product_visible, "El producto no debería estar en el carrito al usar una cantidad negativa."
 
 @pytest.mark.asyncio
 async def test_eliminate_compare(product):
@@ -56,5 +56,12 @@ async def test_eliminate_compare(product):
 async def test_int_value(product):
     await product.selectProduct()
     await product.addCart(data.input_int)
+    cart_product_visible = await product.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
+    assert not cart_product_visible, "El producto no debería estar en el carrito al usar una cantidad numeral."
+
+@pytest.mark.asyncio
+async def test_empty_product(product):
+    await product.selectProduct()
+    await product.addCart(data.input_empty)
     cart_product_visible = await product.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
     assert not cart_product_visible, "El producto no debería estar en el carrito al usar una cantidad numeral."

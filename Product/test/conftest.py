@@ -2,6 +2,7 @@ import pytest_asyncio
 from playwright.async_api import async_playwright
 from pages.Product import Product
 from pages.HomePage import HomePage
+from pages.Login import Login
 from config.data import url
 
 @pytest_asyncio.fixture(scope="function")
@@ -11,6 +12,10 @@ async def page():
         page =  await browser.new_page()
         home = HomePage(page)
         await home.navigate(url.BASE_URL)
+        await home.popup()
+        await home.logHome()
+        login = Login(page)
+        await login.LogIN()
         await home.popup()
         yield page
         await browser.close()

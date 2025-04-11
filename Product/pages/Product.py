@@ -26,8 +26,8 @@ class Product:
     async def selectLess(self):
         await self.lessQuantity.click()
 
-    async def inputSection(self):
-        await self.inputQuantity.fill("25")
+    async def inputSection(self, input_singular:str):
+        await self.inputQuantity.fill(input_singular)
 
     async def addSelection(self):
         await self.btnAdd.click()
@@ -59,3 +59,8 @@ class Product:
         await self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(8) > div.tf-compare-color-top > label").click()
         await self.page.wait_for_timeout(2000)
         await self.page.locator("#compare_color > div > div > div.header > span").click()
+        await self.btnCompare.click()
+        await self.page.wait_for_timeout(2000)
+
+    #async def get_validation_values(self):
+

@@ -26,10 +26,10 @@ class HomePage:
         await self.account.click()
         await self.page.wait_for_selector("#login")
         await self.btnToRegister.click()
-        await self.btnRegister.click()
-        await self.page.wait_for_selector("#register", state="visible")
-        await self.page.wait_for_timeout(1000)
-        await self.btnOut.click()
+        #await self.btnRegister.click()
+        #await self.page.wait_for_selector("#register", state="visible")
+        #await self.page.wait_for_timeout(1000)
+        #await self.btnOut.click()
 
     async def logHome(self):
         await self.account.click()

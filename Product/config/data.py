@@ -8,3 +8,6 @@ class data:
     input_max = "1000000000000000000000000"
     input_neg = "-1"
     input_zero = "0"
+    input_int = 1
+    email = "team2@taqc.com"
+    password = "team2"

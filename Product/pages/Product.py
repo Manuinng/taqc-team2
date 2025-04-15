@@ -13,6 +13,8 @@ class Product:
         self.btnAdd = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > a.tf-btn.btn-fill.justify-content-center.fw-6.fs-16.flex-grow-1.animate-hover-btn")
         self.inputQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > input[type=text]")
         self.btnCompare = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-extra-link > a:nth-child(1)")
+        self.btnBuy = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > div > a.btns-full")
+        self.btnCate = page.locator("#wrapper > div > div > div > div.tf-breadcrumb-prev-next > a.tf-breadcrumb-back.hover-tooltip.center")
 
     async def selectColor(self):
         await self.btnColor.click()
@@ -62,7 +64,22 @@ class Product:
         await self.btnCompare.click()
         await self.page.wait_for_timeout(2000)
 
+    async def buyOption(self):
+        await self.btnBuy.click()
+        await self.page.wait_for_timeout(2000)
+
+    async def categoryOption(self):
+        await self.btnCate.click()
+        await self.page.wait_for_timeout(2000)
+
     #async def get_validation_values(self):
     async def get_information_cart(self):
         cart_product_visible = await self.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div").is_visible()
         return cart_product_visible
+    
+    async def get_product_compare(self):
+        products_in_compare = await self.page.locator("#remove-compare-color-beige-1").is_visible()
+        return products_in_compare
+    
+    #async def get_validation_url(self):
+    #    validate_url = 

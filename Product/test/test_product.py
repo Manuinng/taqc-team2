@@ -44,8 +44,7 @@ async def test_fail_neg_product(product):
 async def test_eliminate_compare(product):
     await product.selectProduct()
     await product.viewCompare()
-    products_in_compare_count_before_removal = await product.page.locator("#remove-compare-color-beige-1").is_visible()
-    assert not products_in_compare_count_before_removal , "La sección de comparación está vacía, no hay productos para comparar."
+    assert not product.get_product_compare , "La sección de comparación está vacía, no hay productos para comparar."
 
 @pytest.mark.asyncio
 async def test_int_value(product):
@@ -58,3 +57,15 @@ async def test_empty_product(product):
     await product.selectProduct()
     await product.addCart(data.input_empty)
     assert not product.get_information_cart, "El producto no debería estar en el carrito al usar una cantidad numeral."
+
+@pytest.mark.asyncio
+async def test_buy_with(product):
+    await product.selectProduct()
+    await product.buyOption()
+    assert "/checkout" in product.page.url, "La pagina no ha sido direccionado a checkout"
+
+@pytest.mark.asyncio
+async def test_categories_button(product):
+    await product.selectProduct()
+    await product.categoryOption()
+    assert "/shop-default" in product.page.url, "La pagina no se redirecciono a categorias"

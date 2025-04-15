@@ -13,6 +13,7 @@ class Login:
         await self.Email.fill(data.email)
         await self.Password.fill(data.password)
         await self.buttonL.click()
+        await asyncio.sleep(2)
         await self.page.keyboard.press("Escape")
         await self.page.locator("#header > div > div > div.col-xl-3.col-md-4.col-6 > a").click()
         await asyncio.sleep(5)

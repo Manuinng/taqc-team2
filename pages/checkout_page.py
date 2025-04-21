@@ -1,5 +1,4 @@
 from playwright.async_api import Page
-from config.config import BASE_URL
 
 class CheckoutPage:
     def __init__(self, page: Page):
@@ -24,9 +23,7 @@ class CheckoutPage:
         await self.page.locator(selector).scroll_into_view_if_needed()
         await self.page.fill(selector, value)
 
-    async def navigate(self):
-        await self.page.goto(f"{BASE_URL}/checkout")
-
+    # change this so it receives a list/dictionary maybe?
     async def fill_billing_details(
             self,
             first_name=None,

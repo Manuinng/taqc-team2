@@ -1,6 +1,7 @@
 import pytest
 from pages import CheckoutPage
 from playwright.async_api import expect, TimeoutError
+from config.config import BASE_URL
 
 @pytest.mark.parametrize("test_field,test_value,test_description", [
     # valid data
@@ -63,14 +64,18 @@ async def test_form_input(browser, session, checkout_valid_data, cart_valid_data
         checkout_data["card_cvc"]
     )
     if checkout_data["tos_checkbox"]: await checkout.click_tos_checkbox()
-    await checkout.place_order()
 
-    order_saved_message = "p:has-text('Order saved successfully!')"
+    order_placed = False
     try:
-        await page.wait_for_selector(order_saved_message, timeout=2000)
-        order_placed = await page.locator(order_saved_message).is_visible()
+        async with page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
+            await checkout.place_order()
+        response = await response_info.value
+
+        if response.ok:
+            response_data = await response.json()
+            order_placed = response_data.get("success", False)
     except TimeoutError:
-        order_placed = False
+        pass
 
     if test_field:
         assert not order_placed, f"Order was placed with {test_description}"

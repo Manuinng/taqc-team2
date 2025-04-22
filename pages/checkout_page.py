@@ -4,6 +4,7 @@ from config.config import BASE_URL
 class CheckoutPage:
     def __init__(self, page: Page):
         self.page = page
+        self.url = f"{BASE_URL}/checkout"
         self.first_name = "#first-name"
         self.last_name = "#last-name"
         self.country = "#country"
@@ -25,7 +26,7 @@ class CheckoutPage:
         await self.page.fill(selector, value)
 
     async def navigate(self):
-        await self.page.goto(f"{BASE_URL}/checkout")
+        await self.page.goto(self.url)
 
     async def fill_billing_details(
             self,

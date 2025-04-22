@@ -1,9 +1,11 @@
 import pytest
 from pages import CheckoutPage
-from playwright.async_api import TimeoutError
+from playwright.async_api import expect, TimeoutError
 
 @pytest.mark.parametrize("test_field,test_value,test_description", [
+    # valid data
     (None, None, "valid data"),
+    # empty fields
     ("first_name", "", "empty first name"),
     ("last_name", "", "empty last name"),
     ("country", "", "empty country"),
@@ -15,8 +17,17 @@ from playwright.async_api import TimeoutError
     ("card_date", "", "empty card date"),
     ("card_cvc", "", "empty card cvc"),
     ("tos_checkbox", False, "unchecked terms and conditions"),
-    ("email", "not_an_email", "invalid email (no @)"),
-    ("phone", "not_a_phone_number", "invalid phone number"),
+    # email validations not covered by html input type=email attribute
+    ("email", ".email@example.com", "invalid email (local part starts with special character)"),
+    ("email", "invalid..email@example.com", "invalid email (local part has repeated special characters)"),
+    ("email", "email@example", "invalid email (no top level domain)"),
+    ("email", "email@example.c-m", "invalid email (top level domain has special character)"),
+    ("email", "email@example.c", "invalid email (top level domain too short, <2 chars)"),
+    # phone number length validations according to E.164
+    ("phone", "not_a_phone_number", "invalid phone number (invalid chars)"),
+    ("phone", "+999999", "invalid phone number (too short, <7 digits)"),
+    ("phone", "+9999999999999999", "invalid phone number (too long, >15 digits)"),
+    # credit card tests
     ("card_number", "not_a_card_number", "invalid card number (not a number)"),
     ("card_number", "0000000000000001", "invalid card number (fails luhn algorithm)"),
     ("card_date", "not_a_date", "invalid card expiration date (not a date)"),
@@ -25,9 +36,10 @@ from playwright.async_api import TimeoutError
     ("card_cvc", "abc", "invalid card cvc (not a number)"),
 ])
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_input(browser, session, checkout_valid_data, test_field, test_value, test_description):
+async def test_form_input(browser, session, checkout_valid_data, cart_valid_data, test_field, test_value, test_description):
     context = await browser.new_context()
     await context.add_cookies(session)
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
     page = await context.new_page()
 
     checkout = CheckoutPage(page)
@@ -64,3 +76,22 @@ async def test_form_input(browser, session, checkout_valid_data, test_field, tes
         assert not order_placed, f"Order was placed with {test_description}"
     else:
         assert order_placed, "Order with valid data wasn't placed after 2s"
+
+@pytest.mark.parametrize("test_case", [
+    "not logged in",
+    "cart is empty",
+])
+@pytest.mark.asyncio(loop_scope="module")
+async def test_access(browser, session, cart_valid_data, test_case):
+    context = await browser.new_context()
+
+    if test_case != "not logged in":
+        await context.add_cookies(session)
+    if test_case != "cart is empty":
+        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+
+    page = await context.new_page()
+
+    checkout = CheckoutPage(page)
+    await checkout.navigate()
+    await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout.url, timeout=2000)

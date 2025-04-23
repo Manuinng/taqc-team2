@@ -5,51 +5,16 @@ from playwright.async_api import async_playwright, Browser, Cookie
 from config.config import BASE_URL, TEST_USER
 from pages import AutomationPortal, Navbar, LoginPopup
 
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
-async def checkout_valid_data() -> Dict[str, Any]:
-    return {
-        "first_name": "first",
-        "last_name": "last",
-        "country": "Spain",
-        "city": "city",
-        "address": "address",
-        "phone": "987654321",
-        "email": TEST_USER["email"] or "email@example.com",
-        "notes": "notes",
-        "discount_code": "discount",
-        "card_number": "4242424242424242",
-        "card_date": "12/12",
-        "card_cvc": "123",
-        "tos_checkbox": True
-    }
+def pytest_addoption(parser):
+    parser.addoption("--no-headless", action="store_false", default=True, help="run tests with the browser's GUI instead of headless mode")
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def browser() -> AsyncGenerator[Browser, None]:
+async def browser(request) -> AsyncGenerator[Browser, None]:
+    headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=headless_cmd)
         yield browser
         await browser.close()
-
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
-async def session_ui() -> List[Cookie]:
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
-        page = await browser.new_page()
-        test_email = TEST_USER["email"] or "email@example.com"
-        test_password = TEST_USER["password"] or "password"
-
-        portal = AutomationPortal(page)
-        navbar = Navbar(page)
-        login_popup = LoginPopup(page)
-
-        await portal.navigate()
-        await portal.close_newsletter_popup()
-        await navbar.navigate_to_account()
-        await login_popup.fill_login_popup(test_email, test_password)
-        await login_popup.submit_login_popup()
-        session =  await page.context.cookies()
-        await browser.close()
-        return session
 
 @pytest_asyncio.fixture(loop_scope="module", scope="module")
 async def session() -> List[Cookie]:
@@ -94,3 +59,68 @@ async def session() -> List[Cookie]:
         ))
 
     return context_cookies
+
+@pytest_asyncio.fixture(loop_scope="module", scope="module")
+async def session_ui() -> List[Cookie]:
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)
+        page = await browser.new_page()
+        test_email = TEST_USER["email"] or "email@example.com"
+        test_password = TEST_USER["password"] or "password"
+
+        portal = AutomationPortal(page)
+        navbar = Navbar(page)
+        login_popup = LoginPopup(page)
+
+        await portal.navigate()
+        await portal.close_newsletter_popup()
+        await navbar.navigate_to_account()
+        await login_popup.fill_login_popup(test_email, test_password)
+        await login_popup.submit_login_popup()
+        session =  await page.context.cookies()
+        await browser.close()
+        return session
+
+@pytest_asyncio.fixture(loop_scope="module", scope="module")
+async def checkout_valid_data() -> Dict[str, Any]:
+    return {
+        "first_name": "first",
+        "last_name": "last",
+        "country": "Spain",
+        "city": "city",
+        "address": "address",
+        "phone": "+987654321",
+        "email": TEST_USER["email"] or "email@example.com",
+        "notes": "notes",
+        "discount_code": "discount",
+        "card_number": "4242424242424242",
+        "expiry": "12/12",
+        "cvc": "123",
+        "tos_checkbox": True
+    }
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def cart_valid_data() -> List[Dict[str, Any]]:
+    return [
+        {
+            "id": 453,
+            "imgSrc": "/images/products/pickleball-black-1.jpg",
+            "imgHoverSrc": "/images/products/pickleball-blue-1.jpg",
+            "title": "Franklin Signature Pickleball Paddle",
+            "oldPrice": 139,
+            "price": 100,
+            "colors": [
+                {
+                    "name": "Black",
+                    "colorClass": "bg_dark",
+                    "imgSrc": "/images/products/pickleball-black-1.jpg"
+                },
+                {
+                    "name": "Blue",
+                    "colorClass": "bg_blue-7",
+                    "imgSrc": "/images/products/pickleball-blue-1.jpg"
+                }
+            ],
+            "quantity": 1
+        }
+    ]

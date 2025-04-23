@@ -5,10 +5,14 @@ from playwright.async_api import async_playwright, Browser, Cookie
 from config.config import BASE_URL, TEST_USER
 from pages import AutomationPortal, Navbar, LoginPopup
 
+def pytest_addoption(parser):
+    parser.addoption("--no-headless", action="store_false", default=True, help="run tests with the browser's GUI instead of headless mode")
+
 @pytest_asyncio.fixture(loop_scope="module")
-async def browser() -> AsyncGenerator[Browser, None]:
+async def browser(request) -> AsyncGenerator[Browser, None]:
+    headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=headless_cmd)
         yield browser
         await browser.close()
 

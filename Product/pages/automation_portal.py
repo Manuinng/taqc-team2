@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.config import url
+from config.config import BASE_URL
 import asyncio
 
 class AutomationPortal:
@@ -7,7 +7,7 @@ class AutomationPortal:
         self.page = page
 
     async def navigate(self):
-        await self.page.goto(url.BASE_URL)
+        await self.page.goto(BASE_URL)
 
     async def close_newsletter_popup(self):
         await self.page.wait_for_selector("#newsletterPopup", state="visible")

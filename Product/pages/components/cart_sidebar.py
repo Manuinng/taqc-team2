@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.config import url
+from config.config import BASE_URL
 
 class CartSidebar:
     def __init__(self, page: Page):
@@ -14,4 +14,4 @@ class CartSidebar:
     async def go_to_checkout(self):
         await self.page.wait_for_selector(self.checkout_button)
         await self.page.click(self.checkout_button)
-        await self.page.wait_for_url(f"{url.BASE_URL}/checkout")
+        await self.page.wait_for_url(f"{BASE_URL}/checkout")

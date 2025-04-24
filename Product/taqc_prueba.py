@@ -1,7 +1,5 @@
 from playwright.async_api import async_playwright
 from Product.pages.automation_portal import AutomationPortal
-from pages.Registration import Registration
-from pages.Login import Login
 from pages.Product import Product
 import asyncio
 
@@ -18,11 +16,6 @@ async def main():
         product = Product(page)
         await product.viewCompare()
         await product.addCart()
-        #registration = Registration(page)
-        #await registration.register()
-
-        #login = Login(page)
-        #await login.LogIN()
         await browser.close()
 
 asyncio.run(main())

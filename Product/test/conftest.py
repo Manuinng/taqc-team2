@@ -2,7 +2,7 @@ import pytest_asyncio
 import requests
 from typing import Dict, List, Any, AsyncGenerator
 from playwright.async_api import async_playwright, Browser, Cookie
-from config.config import url
+from config.config import BASE_URL, TEST_USER
 
 def pytest_addoption(parser):
     parser.addoption("--no-headless", action="store_false", default=True, help="run tests with the browser's GUI instead of headless mode")
@@ -20,7 +20,7 @@ async def session() -> List[Cookie]:
     session = requests.Session()
 
     # GET CSRF Token
-    response_csrf = session.get(f"{url.BASE_URL}/api/auth/csrf")
+    response_csrf = session.get(f"{BASE_URL}/api/auth/csrf")
     if response_csrf.status_code == 200:
         csrf_token = response_csrf.json().get('csrfToken')
     else:
@@ -28,19 +28,19 @@ async def session() -> List[Cookie]:
 
     # POST Login
     data = {
-        "email": url.TEST_USER["email"],
-        "password": url.TEST_USER["password"],
+        "email": TEST_USER["email"],
+        "password": TEST_USER["password"],
         "redirect": "false",
         "csrfToken": csrf_token,
-        "callbackUrl": f"{url.BASE_URL}/login",
+        "callbackUrl": f"{BASE_URL}/login",
         "json": "true"
     }
-    response_login = session.post(f"{url.BASE_URL}/api/auth/callback/credentials", data=data)
+    response_login = session.post(f"{BASE_URL}/api/auth/callback/credentials", data=data)
     if response_login.status_code != 200:
         raise requests.exceptions.HTTPError(f"Login failed: {response_login.status_code}")
 
     # GET Session
-    response_session = session.get(f"{url.BASE_URL}/api/auth/session")
+    response_session = session.get(f"{BASE_URL}/api/auth/session")
     if response_session.status_code != 200:
         raise requests.exceptions.HTTPError(f"Failed to retrieve session cookie: {response_session.status_code}")
 

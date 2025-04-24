@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.config import url
+from config.config import BASE_URL
 
 class Navbar:
     def __init__(self, page: Page):
@@ -14,7 +14,7 @@ class Navbar:
     async def navigate_to_account(self, logged_in: bool = False):
         await self.page.click(self.account_button)
         if logged_in:
-            await self.page.wait_for_url(f"{url.BASE_URL}/my-account")
+            await self.page.wait_for_url(f"{BASE_URL}/my-account")
 
     async def open_wishlist(self):
         await self.page.click(self.wishlist)

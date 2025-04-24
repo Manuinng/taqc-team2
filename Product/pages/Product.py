@@ -1,5 +1,4 @@
 from playwright.async_api import Page
-from config.config import url
 import asyncio
 
 class Product:

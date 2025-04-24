@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.config import url
+from config.config import BASE_URL
 
 class LoginPopup:
     def __init__(self, page: Page):
@@ -17,7 +17,7 @@ class LoginPopup:
     async def submit_login_popup(self):
         await self.page.wait_for_selector(self.login_button)
         await self.page.click(self.login_button)
-        await self.page.wait_for_url(f"{url.BASE_URL}/my-account")
+        await self.page.wait_for_url(f"{BASE_URL}/my-account")
 
     async def close_login_popup(self):
         await self.page.wait_for_selector(self.close_button)

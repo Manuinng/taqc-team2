@@ -142,16 +142,3 @@ async def run_test_case(portal_page, test_name, add_method, product_options=None
 async def test_home_cases(portal_page, test_data):
     test_name, add_method, product_options, cart_actions, expected_outcome = test_data
     await run_test_case(portal_page, test_name, add_method, product_options, cart_actions, expected_outcome)
-    
-    # Mostrar resumen de resultados al final
-    if test_data == pytest.param(("Quick View - Multiple Cart Actions", "quick_view", {"color": "Blue", "size": "L", "quantity": 1}, ["adjust_quantity", "add_note", "estimate_shipping"], "success")):
-        print("\n=== Resumen de Resultados ===")
-        for result in test_results:
-            status = "PASÓ" if result["passed"] else "FALLÓ"
-            print(f"- Test: {result['test_name']} - {status}")
-            if not result["passed"]:
-                print("  Detalles del fallo:")
-                for detail in result["details"]:
-                    print(f"    - {detail}")
-            print(f"  Resultado esperado: {result['expected_outcome']}")
-        print("=== Fin del Resumen ===")

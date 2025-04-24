@@ -174,7 +174,7 @@ async def test_find_size(browser, session):
     assert not product.get_find_size, "El boton de find size no esta funcionando"
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_find_size(browser, session):
+async def test_wishlist_option(browser, session):
     context = await browser.new_context()
     await context.add_cookies(session)
     page = await context.new_page()

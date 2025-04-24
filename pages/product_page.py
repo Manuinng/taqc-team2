@@ -1,7 +1,7 @@
 from playwright.async_api import Page
 import asyncio
 
-class Product:
+class ProductPage:
     def __init__(self ,page:Page):
         self.page = page
         self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-wrapper > a")

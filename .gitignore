@@ -3,3 +3,4 @@ Product/test/__pycache__/
 .pytest_cache/
 Product/config/__pycache__
 Product/__pycache__/
+Product/pages/components/__pycache__

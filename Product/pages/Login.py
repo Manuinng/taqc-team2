@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.data import url, data
+from config.config import url, data
 import asyncio
 
 class Login:

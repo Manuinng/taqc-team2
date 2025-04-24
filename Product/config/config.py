@@ -1,5 +1,6 @@
 class url:
     BASE_URL = "https://automation-portal-bootcamp.vercel.app"
+    TEST_USER = {"email": "team2@taqc.com", "password": "team2"}
 
 class data:
     input_success = "25"
@@ -10,5 +11,3 @@ class data:
     input_zero = "0"
     input_int = 1
     input_empty = " "
-    email = "team2@taqc.com"
-    password = "team2"

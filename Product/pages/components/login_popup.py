@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.data import url
+from config.config import url
 
 class LoginPopup:
     def __init__(self, page: Page):

@@ -1,5 +1,5 @@
 from playwright.async_api import Page
-from config.data import url
+from config.config import url
 import asyncio
 from faker import Faker
 

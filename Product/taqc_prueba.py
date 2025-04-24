@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
-from pages.HomePage import HomePage
-from pages.registration import Registration
+from Product.pages.automation_portal import AutomationPortal
+from pages.Registration import Registration
 from pages.Login import Login
 from pages.Product import Product
 import asyncio
@@ -12,10 +12,8 @@ async def main():
         page =  await browser.new_page()
         await page.goto(URL, wait_until="domcontentloaded")
 
-        home = HomePage(page)
-        await home.popup()
-        #await home.registerHome()
-        await home.productHome()
+        home = AutomationPortal(page)
+        await home.newclose_newsletter_popup()
 
         product = Product(page)
         await product.viewCompare()

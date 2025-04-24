@@ -14,7 +14,6 @@ async def test_success_product(browser, session):
     product = Product(page)
     await product.selectProduct()
     await product.addCart(data.input_success)
-    #assert await product.get_field_validation_state("")
     assert product.get_information_cart, "El producto no se encontró en el carrito."
 
 @pytest.mark.asyncio(loop_scope="module")

@@ -1,6 +1,6 @@
 import pytest_asyncio
 import requests
-from typing import Dict, List, Any, AsyncGenerator
+from typing import List, AsyncGenerator
 from playwright.async_api import async_playwright, Browser, Cookie
 from config.config import BASE_URL, TEST_USER
 from pages import AutomationPortal, Navbar, LoginPopup
@@ -80,47 +80,3 @@ async def session_ui() -> List[Cookie]:
         session =  await page.context.cookies()
         await browser.close()
         return session
-
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
-async def checkout_valid_data() -> Dict[str, Any]:
-    return {
-        "first_name": "first",
-        "last_name": "last",
-        "country": "Spain",
-        "city": "city",
-        "address": "address",
-        "phone": "+987654321",
-        "email": TEST_USER["email"] or "email@example.com",
-        "notes": "notes",
-        "discount_code": "discount",
-        "card_number": "4242424242424242",
-        "expiry": "12/25",
-        "cvc": "123",
-        "tos_checkbox": True
-    }
-
-@pytest_asyncio.fixture(loop_scope="module")
-async def cart_valid_data() -> List[Dict[str, Any]]:
-    return [
-        {
-            "id": 453,
-            "imgSrc": "/images/products/pickleball-black-1.jpg",
-            "imgHoverSrc": "/images/products/pickleball-blue-1.jpg",
-            "title": "Franklin Signature Pickleball Paddle",
-            "oldPrice": 139,
-            "price": 100,
-            "colors": [
-                {
-                    "name": "Black",
-                    "colorClass": "bg_dark",
-                    "imgSrc": "/images/products/pickleball-black-1.jpg"
-                },
-                {
-                    "name": "Blue",
-                    "colorClass": "bg_blue-7",
-                    "imgSrc": "/images/products/pickleball-blue-1.jpg"
-                }
-            ],
-            "quantity": 1
-        }
-    ]

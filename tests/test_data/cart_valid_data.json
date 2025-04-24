@@ -1,0 +1,23 @@
+[
+  {
+      "id": 453,
+      "imgSrc": "/images/products/pickleball-black-1.jpg",
+      "imgHoverSrc": "/images/products/pickleball-blue-1.jpg",
+      "title": "Franklin Signature Pickleball Paddle",
+      "oldPrice": 139,
+      "price": 100,
+      "colors": [
+          {
+              "name": "Black",
+              "colorClass": "bg_dark",
+              "imgSrc": "/images/products/pickleball-black-1.jpg"
+          },
+          {
+              "name": "Blue",
+              "colorClass": "bg_blue-7",
+              "imgSrc": "/images/products/pickleball-blue-1.jpg"
+          }
+      ],
+      "quantity": 1
+  }
+]

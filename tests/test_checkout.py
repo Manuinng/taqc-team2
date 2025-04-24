@@ -1,5 +1,7 @@
 import pytest
+from pytest_csv_params.decorator import csv_params
 import requests
+import json
 from pages import CheckoutPage
 from playwright.async_api import expect, TimeoutError
 from config.config import BASE_URL
@@ -14,49 +16,23 @@ def camel_to_snake(camel_case_str):
             snake_case_str.append(char)
     return ''.join(snake_case_str)
 
-@pytest.mark.parametrize("test_field,test_value,test_description", [
-    # valid data
-    (None, None, "valid data"),
-    # empty fields
-    ("first_name", "", "empty first name"),
-    ("last_name", "", "empty last name"),
-    ("country", "", "empty country"),
-    ("city", "", "empty city"),
-    ("address", "", "empty address"),
-    ("phone", "", "empty phone number"),
-    ("email", "", "empty email"),
-    ("card_number", "", "empty card number"),
-    ("expiry", "", "empty card date"),
-    ("cvc", "", "empty card cvc"),
-    ("tos_checkbox", False, "unchecked terms and conditions"),
-    # email validations not covered by html input type=email attribute
-    ("email", ".email@example.com", "invalid email (local part starts with special character)"),
-    ("email", "invalid..email@example.com", "invalid email (local part has repeated special characters)"),
-    ("email", "email@example", "invalid email (no top level domain)"),
-    ("email", "email@example.c-m", "invalid email (top level domain has special character)"),
-    ("email", "email@example.c", "invalid email (top level domain too short, <2 chars)"),
-    # phone number length validations according to E.164
-    ("phone", "not_a_phone_number", "invalid phone number (invalid chars)"),
-    ("phone", "+999999", "invalid phone number (too short, <7 digits)"),
-    ("phone", "+9999999999999999", "invalid phone number (too long, >15 digits)"),
-    # credit card tests
-    ("card_number", "not_a_card_number", "invalid card number (not a number)"),
-    ("card_number", "0000000000000001", "invalid card number (fails luhn algorithm)"),
-    ("expiry", "not_a_date", "invalid card expiration date (not a date)"),
-    ("expiry", "13/26", "invalid card expiration date (invalid date)"),
-    ("expiry", "12/24", "invalid card expiration date (expired card)"),
-    ("cvc", "abc", "invalid card cvc (not a number)"),
-])
+def load_json(file_name):
+    file_path = f"./tests/test_data/{file_name}"
+    with open(file_path, 'r') as json_file:
+        return json.load(json_file)
+
+@csv_params(data_file="./tests/test_data/checkout_params.csv")
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_input(browser, session, checkout_valid_data, cart_valid_data, test_field, test_value, test_description):
+async def test_form_input(browser, session, test_field, test_value, test_description):
     context = await browser.new_context()
     await context.add_cookies(session)
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+    cart_data = load_json("cart_valid_data.json")
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
     page = await context.new_page()
 
     checkout = CheckoutPage(page)
     await checkout.navigate()
-    checkout_data = checkout_valid_data.copy()
+    checkout_data = load_json("checkout_valid_data.json")
     if test_field: checkout_data[test_field] = test_value
     await checkout.fill_billing_details(
         checkout_data["first_name"],
@@ -98,13 +74,14 @@ async def test_form_input(browser, session, checkout_valid_data, cart_valid_data
     "cart is empty",
 ])
 @pytest.mark.asyncio(loop_scope="module")
-async def test_access(browser, session, cart_valid_data, test_case):
+async def test_access(browser, session, test_case):
     context = await browser.new_context()
 
     if test_case != "not logged in":
         await context.add_cookies(session)
     if test_case != "cart is empty":
-        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+        cart_data = load_json("cart_valid_data.json")
+        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
 
     page = await context.new_page()
 
@@ -113,29 +90,31 @@ async def test_access(browser, session, cart_valid_data, test_case):
     await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout.url, timeout=2000)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_api_order_placed(browser, session, checkout_valid_data, cart_valid_data):
+async def test_api_order_placed(browser, session):
     context = await browser.new_context()
     await context.add_cookies(session)
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+    cart_data = load_json("cart_valid_data.json")
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
     page = await context.new_page()
 
     checkout = CheckoutPage(page)
     await checkout.navigate()
+    checkout_data = load_json("checkout_valid_data.json")
     await checkout.fill_billing_details(
-        checkout_valid_data["first_name"],
-        checkout_valid_data["last_name"],
-        checkout_valid_data["country"],
-        checkout_valid_data["city"],
-        checkout_valid_data["address"],
-        checkout_valid_data["phone"],
-        checkout_valid_data["email"],
-        checkout_valid_data["notes"]
+        checkout_data["first_name"],
+        checkout_data["last_name"],
+        checkout_data["country"],
+        checkout_data["city"],
+        checkout_data["address"],
+        checkout_data["phone"],
+        checkout_data["email"],
+        checkout_data["notes"]
     )
-    await checkout.apply_discount_code(checkout_valid_data["discount_code"])
+    await checkout.apply_discount_code(checkout_data["discount_code"])
     await checkout.fill_credit_card_details(
-        checkout_valid_data["card_number"],
-        checkout_valid_data["expiry"],
-        checkout_valid_data["cvc"]
+        checkout_data["card_number"],
+        checkout_data["expiry"],
+        checkout_data["cvc"]
     )
     await checkout.click_tos_checkbox()
 
@@ -160,19 +139,19 @@ async def test_api_order_placed(browser, session, checkout_valid_data, cart_vali
     cart_data = order_data.pop("items", [])
 
     errors = []
-    product = cart_data[0]
-    product.pop("id", None)
-    for key, value in product.items():
-        if key == "orderId":
-            reference = order_api_id
-        else:
-            reference = cart_valid_data[0].get(key, None)
-        if value != reference:
-            errors.append(f"Product {key} mismatch: reference = {reference}, saved = {value}")
+    for product in cart_data:
+        product.pop("id", None)
+        for key, value in product.items():
+            if key == "orderId":
+                reference = order_api_id
+            else:
+                reference = product.get(key, None)
+            if value != reference:
+                errors.append(f"Product {key} mismatch: reference = {reference}, saved = {value}")
 
     for key, value in order_data.items():
         key = camel_to_snake(key)
-        reference = checkout_valid_data.get(key, None)
+        reference = checkout_data.get(key, None)
         if value != reference:
             errors.append(f"Order {key} mismatch: reference = {reference}, saved = {value}")
 

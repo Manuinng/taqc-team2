@@ -85,8 +85,8 @@ Verify checkout form is not submitted if any required field is empty
 2. Fill in all other fields with valid data
 3. Attempt to submit the form
 
-### Test Case 2.10: Validate card cvc is required
-1. Leave card cvc field empty
+### Test Case 2.10: Validate card CVC is required
+1. Leave card CVC field empty
 2. Fill in all other fields with valid data
 3. Attempt to submit the form
 
@@ -253,7 +253,7 @@ Verify the order placed in the API matches the order sent with the checkout form
 2. Take note of the cart items data
 3. Attempt to submit the form
 4. Obtain the order ID from the form submission response
-5. Request the order data from the API endpoint using the order ID obtained earlier
+5. Request the order data from the orders API endpoint using the order ID obtained earlier
 6. Verify the retrieved data matches the data sent when placing the order
 
 ### Expected Result

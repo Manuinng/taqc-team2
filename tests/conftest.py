@@ -94,7 +94,7 @@ async def checkout_valid_data() -> Dict[str, Any]:
         "notes": "notes",
         "discount_code": "discount",
         "card_number": "4242424242424242",
-        "expiry": "12/12",
+        "expiry": "12/25",
         "cvc": "123",
         "tos_checkbox": True
     }

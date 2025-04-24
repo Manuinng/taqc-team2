@@ -1,6 +1,17 @@
 # TAQC Team Test Planning - User Registration
 
+## Table of Contents
+1. [Validate Successful Registration with Valid Data](#test-case-1-validate-successful-registration-with-valid-data)
+2. [Validate Required Fields](#test-case-2-validate-required-fields)
+3. [Validate Invalid Emails Are Not Accepted](#test-case-3-validate-invalid-emails-are-not-accepted)
+4. [Validate Invalid Names Are Not Accepted](#test-case-4-validate-invalid-names-are-not-accepted)
+5. [Validate Invalid Passwords Are Not Accepted](#test-case-5-validate-invalid-passwords-are-not-accepted)
+6. [Validate Registration Fails with All Fields Missing](#test-case-6-validate-registration-fails-with-all-fields-missing)
+
+---
+
 ## Test Case 1: Successful Registration with Valid Data
+
 
 ### Objective
 Verify the registration form submits successfully when all required fields are filled with valid data.

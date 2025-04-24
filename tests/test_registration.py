@@ -87,10 +87,11 @@ async def run_test_case(portal_page, test_name, first_name, last_name, email, pa
             print(f"Result: Failure as expected - {expected_outcome}")
 
     except TimeoutError:
-        print(f"Timeout alcanzado en el caso de prueba '{test_name}'. Cerrando el test.")
-        pytest.fail(f"Fallo en el caso de prueba '{test_name}': Timeout alcanzado.")
+        print(f"Timeout reached in test case '{test_name}'. Closing the test.")
+        pytest.fail(f"Test case '{test_name}' failed: Timeout reached.")
 
 @pytest.mark.parametrize("test_data", [
+            pytest.param(("Valid registration", "FirstName", "LastName", "test9999@example.com", "12345", "success")),
             pytest.param(("Invalid email", "FirstName", "LastName", "invalid_email", "12345", "failure - invalid email")),
             pytest.param(("Empty email", "FirstName", "LastName", "", "12345", "failure - email required")),
             pytest.param(("Email with spaces", "FirstName", "LastName", "test @domain.com", "12345", "failure - invalid email")),
@@ -104,7 +105,16 @@ async def run_test_case(portal_page, test_name, first_name, last_name, email, pa
             pytest.param(("Whitespace-only first name", "   ", "LastName", "test9999@example.com", "12345", "failure - first name required")),
             pytest.param(("Whitespace-only last name", "FirstName", "   ", "test9999@example.com", "12345", "failure - last name required")),
             pytest.param(("Whitespace-only password", "FirstName", "LastName", "test9999@example.com", "   ", "failure - password required")),
-        
+            pytest.param(("Duplicate email registration", "FirstName", "LastName", "team2@taqc.com", "12345", "failure - email already in use")),
+            pytest.param(("Missing all fields", "", "", "", "", "failure - all fields required")),
+            pytest.param(("Email with special characters", "FirstName", "LastName", "test!@domain.com", "12345", "failure - invalid email")),
+            pytest.param(("Email without domain", "FirstName", "LastName", "test@", "12345", "failure - invalid email")),
+            pytest.param(("Password with only numbers", "FirstName", "LastName", "test9999@example.com", "12345678", "failure - weak password")),
+            pytest.param(("Password with only letters", "FirstName", "LastName", "test9999@example.com", "abcdefgh", "failure - weak password")),
+            pytest.param(("Password with special characters only", "FirstName", "LastName", "test9999@example.com", "@#$%^&*", "failure - weak password")),
+            pytest.param(("Very long email", "FirstName", "LastName", "test" + "a" * 250 + "@example.com", "12345", "failure - email too long")),
+            pytest.param(("First name exceeding character limit", "A" * 100, "LastName", "test9999@example.com", "12345", "failure - first name too long")),
+            pytest.param(("Last name exceeding character limit", "FirstName", "B" * 100, "test9999@example.com", "12345", "failure - last name too long")),
 ])
 
 @pytest.mark.asyncio

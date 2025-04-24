@@ -3,6 +3,9 @@ from playwright.async_api import Page
 class RegisterForm:
     def __init__(self, page: Page):
         self.page = page
+        
+        # Selectors
+        self.register_form= "form#register-form"
         self.first_name = "input[name='firstName']"
         self.last_name = "input[name='lastName']"
         self.email = "form#register-form input[name='email']"
@@ -14,8 +17,8 @@ class RegisterForm:
         await self.page.fill(selector, value)
 
     async def fill_registration_form(self, first_name=None, last_name=None, email=None, password=None):
-        print("Esperando que el formulario de registro esté visible...")
-        await self.page.wait_for_selector("form#register-form", timeout=5000)
+        print("Waiting for the registration form to be visible...")
+        await self.page.wait_for_selector(self.register_form, state="visible", timeout=3000)
 
         fields = [
             (self.first_name, first_name),
@@ -26,7 +29,7 @@ class RegisterForm:
 
         for selector, value in fields:
             if value:
-                print(f"Rellenando el campo: {selector} con el valor: {value}")
+                print(f"Filling the field: {selector} with the value: {value}")
                 await self.page.locator(selector).wait_for(state="visible", timeout=3000)
                 await self.page.fill(selector, value)
 

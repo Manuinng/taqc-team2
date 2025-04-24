@@ -2,11 +2,14 @@ import pytest
 import pytest_asyncio
 from config.config import TEST_USER
 from utils.api_helper import APIHelper
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, Browser, Cookie
 from pages.automation_portal import AutomationPortal
 from pages.register_form import RegisterForm
 from pages.login_form import LoginForm
 from pages.components import Navbar, CartSidebar, LoginPopup
+
+def pytest_addoption(parser):
+    parser.addoption("--no-headless", action="store_false", default=True, help="Run tests with GUI instead of headless")
 
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_user():
@@ -14,30 +17,28 @@ def cleanup_user():
     for email in emails_to_cleanup:
         user_id = APIHelper.get_user_id(email)
         if user_id:
-            print(f"Usuario existente encontrado con ID {user_id} para el correo {email}. Intentando eliminarlo...")
+            print(f"Existing user found with ID {user_id} for email {email}. Trying to delete...")
             if APIHelper.delete_user(user_id):
-                print(f"Usuario con ID {user_id} eliminado exitosamente.")
+                print(f"User with ID {user_id} successfully deleted.")
             else:
-                print(f"Error al intentar eliminar al usuario con ID {user_id}.")
+                print(f"Error trying to delete user with ID {user_id}.")
         else:
-            print(f"No se encontró un usuario existente para el correo {email}.")
+            print(f"No existing user found for the email {email}.")
 
-# Fixture para inicializar el navegador
 @pytest_asyncio.fixture(scope="function")
-async def browser():
+async def browser(request):
+    headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=headless_cmd)
         yield browser
         await browser.close()
 
-# Fixture para proporcionar una nueva página del navegador para cada prueba
 @pytest_asyncio.fixture(scope="function")
 async def browser_page(browser):
     page = await browser.new_page()
     yield page
     await page.close()
 
-# Fixture para inicializar los objetos de página necesarios para las pruebas
 @pytest_asyncio.fixture(scope="function")
 async def portal_page(browser_page):
     return {
@@ -51,4 +52,4 @@ async def portal_page(browser_page):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
-    config.addinivalue_line("markers", "asyncio: marca una prueba como asíncrona")
+    config.addinivalue_line("markers", "asyncio: marks a test as asynchronous")

@@ -1,5 +1,16 @@
 # Checkout Test Planning
 
+## Table of Contents
+
+- [Test Case 1: Validate successful form submission with valid data](#test-case-1-validate-successful-form-submission-with-valid-data)
+- [Test Case 2: Validate required fields](#test-case-2-validate-required-fields)
+- [Test Case 3: Validate invalid emails are not accepted by the form](#test-case-3-validate-invalid-emails-are-not-accepted-by-the-form)
+- [Test Case 4: Validate invalid phone numbers are not accepted by the form](#test-case-4-validate-invalid-phone-numbers-are-not-accepted-by-the-form)
+- [Test Case 5: Validate invalid credit card data is not accepted by the form](#test-case-5-validate-invalid-credit-card-data-is-not-accepted-by-the-form)
+- [Test Case 6: Validate only logged in users can access the checkout page](#test-case-6-validate-only-logged-in-users-can-access-the-checkout-page)
+- [Test Case 7: Validate user can't access the checkout page with an empty cart](#test-case-7-validate-user-cant-access-the-checkout-page-with-an-empty-cart)
+- [Test Case 8: Validate placed order data matches the data submitted in the checkout form](#test-case-8-validate-placed-order-data-matches-the-data-submitted-in-the-checkout-form)
+
 ## Test Case 1: Validate successful form submission with valid data
 
 ### Objective

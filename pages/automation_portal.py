@@ -27,21 +27,18 @@ class AutomationPortal:
         self.estimate_shipping_button = "#shoppingCart .tf-mini-cart-tool-btn.btn-estimate-shipping"
         self.cancel_estimate_button = ".tf-mini-cart-tool-primary.tf-mini-cart-tool-close:has-text('Cancel') >> nth=1"
 
-    # Selectors for product options
     def get_color_selector(self, color, context="quick_add"):
         if context == "quick_add":
             return f"#quick_add label.hover-tooltip[data-value='{color}']"
         elif context == "quick_view":
             return f"label.hover-tooltip[data-value='{color}']"
 
-    # Selectors for size options
     def get_size_selector(self, size, context="quick_add"):
         if context == "quick_add":
             return f"#quick_add label.style-text[data-value='{size}']"
         elif context == "quick_view":
             return f"label.style-text[data-value='{size}']"
 
-    # Navigation methods
     async def navigate(self):
         await self.page.goto(BASE_URL)
 

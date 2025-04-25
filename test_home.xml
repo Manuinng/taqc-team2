@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="9" time="217.911" timestamp="2025-04-24T21:15:31.599622-04:00" hostname="DESKTOP-7DRO9R6"><testcase classname="tests.test_home" name="test_home_cases[test_data0]" time="33.890" /><testcase classname="tests.test_home" name="test_home_cases[test_data1]" time="12.976" /><testcase classname="tests.test_home" name="test_home_cases[test_data2]" time="25.274" /><testcase classname="tests.test_home" name="test_home_cases[test_data3]" time="27.125" /><testcase classname="tests.test_home" name="test_home_cases[test_data4]" time="12.702" /><testcase classname="tests.test_home" name="test_home_cases[test_data5]" time="22.758"><failure message="Failed: Fallo en 'Quick Add - Invalid Quantity -20': El carrito tiene elementos inesperadamente.">portal_page = {'cart_sidebar': &lt;pages.components.cart_sidebar.CartSidebar object at 0x0000000004ECB650&gt;, 'home': &lt;pages.automation_p...ect at 0x0000000004ECB1D0&gt;, 'login_popup': &lt;pages.components.login_popup.LoginPopup object at 0x0000000004ECB410&gt;, ...}
+test_data = ('Quick Add - Invalid Quantity -20', 'quick_add', {'color': 'Blue', 'quantity': -20, 'size': 'S'}, None, 'failure')
+
+    @pytest.mark.parametrize("test_data", [
+        pytest.param(("Quick View - Full Options", "quick_view", {"color": "Blue", "size": "L", "quantity": 2}, ["adjust_quantity", "add_note"], "success")),
+        pytest.param(("Quick Add - No Options", "quick_add", None, ["adjust_quantity"], "failure")),
+        pytest.param(("Quick View - Partial Options", "quick_view", {"color": "White"}, ["estimate_shipping"], "success")),
+        pytest.param(("Quick Add - Full Options", "quick_add", {"color": "White", "size": "M", "quantity": 3}, ["add_note"], "success")),
+        pytest.param(("Quick View - No Options", "quick_view", None, None, "failure")),
+        pytest.param(("Quick Add - Invalid Quantity -20", "quick_add", {"color": "Blue", "size": "S", "quantity": -20}, None, "failure")),
+        pytest.param(("Quick View - Extreme Quantity 1000", "quick_view", {"color": "Blue", "size": "L", "quantity": 1000}, ["adjust_quantity"], "success")),
+        pytest.param(("Quick Add - All Cart Actions", "quick_add", {"color": "White", "size": "M", "quantity": 1}, ["adjust_quantity", "add_note", "estimate_shipping"], "success")),
+        pytest.param(("Quick View - Invalid Quantity -1", "quick_view", {"color": "Blue", "size": "L", "quantity": -1}, None, "failure")),
+    ])
+    
+    @pytest.mark.asyncio
+    async def test_home_cases(portal_page, test_data):
+        test_name, add_method, product_options, cart_actions, expected_outcome = test_data
+&gt;       await run_test_case(portal_page, test_name, add_method, product_options, cart_actions, expected_outcome)
+
+tests\test_home.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+portal_page = {'cart_sidebar': &lt;pages.components.cart_sidebar.CartSidebar object at 0x0000000004ECB650&gt;, 'home': &lt;pages.automation_p...ect at 0x0000000004ECB1D0&gt;, 'login_popup': &lt;pages.components.login_popup.LoginPopup object at 0x0000000004ECB410&gt;, ...}
+test_name = 'Quick Add - Invalid Quantity -20', add_method = 'quick_add', product_options = {'color': 'Blue', 'quantity': -20, 'size': 'S'}, cart_actions = None
+expected_outcome = 'failure'
+
+    async def run_test_case(portal_page, test_name, add_method, product_options=None, cart_actions=None, expected_outcome="success"):
+        home = portal_page["home"]
+        page = home.page
+    
+        print(f"\nRunning test case: {test_name}")
+    
+        result = {
+            "test_name": test_name,
+            "passed": True,
+            "details": [],
+            "expected_outcome": expected_outcome
+        }
+    
+        try:
+            await home.navigate()
+            await home.close_newsletter_popup()
+            await home.scroll_down()
+            await home.scroll_down()
+    
+            if add_method == "quick_view":
+                try:
+                    await home.quick_view_product()
+                    if product_options:
+                        await home.view_select_product_options_and_click_find_your_size(product_options)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al usar 'Quick View': {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en 'Quick View': {str(e)}")
+                    else:
+                        result["passed"] = True
+    
+            elif add_method == "quick_add":
+                try:
+                    await home.quick_add_product()
+                    if product_options:
+                        await home.add_select_product_options_and_quick_add_to_cart(product_options)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al usar 'Quick Add': {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en 'Quick Add': {str(e)}")
+                    else:
+                        result["passed"] = True
+            else:
+                raise ValueError(f"Método de adición inválido: {add_method}")
+    
+            if cart_actions:
+                try:
+                    await home.interact_with_cart(cart_actions)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al interactuar con el carrito: {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en interacciones con el carrito: {str(e)}")
+    
+            cart_items = page.locator("#shoppingCart .tf-mini-cart-item")
+            item_count = await cart_items.count()
+    
+            if expected_outcome == "success":
+                if item_count &lt;= 0:
+                    result["passed"] = False
+                    result["details"].append("El carrito está vacío cuando se esperaba al menos un elemento.")
+                    pytest.fail(f"Fallo en '{test_name}': El carrito está vacío.")
+            else:
+                if item_count &gt; 0:
+                    result["passed"] = False
+                    result["details"].append("El carrito tiene elementos cuando se esperaba que fallara.")
+&gt;                   pytest.fail(f"Fallo en '{test_name}': El carrito tiene elementos inesperadamente.")
+E                   Failed: Fallo en 'Quick Add - Invalid Quantity -20': El carrito tiene elementos inesperadamente.
+
+tests\test_home.py:76: Failed</failure></testcase><testcase classname="tests.test_home" name="test_home_cases[test_data6]" time="26.038" /><testcase classname="tests.test_home" name="test_home_cases[test_data7]" time="33.097" /><testcase classname="tests.test_home" name="test_home_cases[test_data8]" time="23.997"><failure message="Failed: Fallo en 'Quick View - Invalid Quantity -1': El carrito tiene elementos inesperadamente.">portal_page = {'cart_sidebar': &lt;pages.components.cart_sidebar.CartSidebar object at 0x0000000005D56650&gt;, 'home': &lt;pages.automation_p...ect at 0x0000000005D56450&gt;, 'login_popup': &lt;pages.components.login_popup.LoginPopup object at 0x0000000005D56750&gt;, ...}
+test_data = ('Quick View - Invalid Quantity -1', 'quick_view', {'color': 'Blue', 'quantity': -1, 'size': 'L'}, None, 'failure')
+
+    @pytest.mark.parametrize("test_data", [
+        pytest.param(("Quick View - Full Options", "quick_view", {"color": "Blue", "size": "L", "quantity": 2}, ["adjust_quantity", "add_note"], "success")),
+        pytest.param(("Quick Add - No Options", "quick_add", None, ["adjust_quantity"], "failure")),
+        pytest.param(("Quick View - Partial Options", "quick_view", {"color": "White"}, ["estimate_shipping"], "success")),
+        pytest.param(("Quick Add - Full Options", "quick_add", {"color": "White", "size": "M", "quantity": 3}, ["add_note"], "success")),
+        pytest.param(("Quick View - No Options", "quick_view", None, None, "failure")),
+        pytest.param(("Quick Add - Invalid Quantity -20", "quick_add", {"color": "Blue", "size": "S", "quantity": -20}, None, "failure")),
+        pytest.param(("Quick View - Extreme Quantity 1000", "quick_view", {"color": "Blue", "size": "L", "quantity": 1000}, ["adjust_quantity"], "success")),
+        pytest.param(("Quick Add - All Cart Actions", "quick_add", {"color": "White", "size": "M", "quantity": 1}, ["adjust_quantity", "add_note", "estimate_shipping"], "success")),
+        pytest.param(("Quick View - Invalid Quantity -1", "quick_view", {"color": "Blue", "size": "L", "quantity": -1}, None, "failure")),
+    ])
+    
+    @pytest.mark.asyncio
+    async def test_home_cases(portal_page, test_data):
+        test_name, add_method, product_options, cart_actions, expected_outcome = test_data
+&gt;       await run_test_case(portal_page, test_name, add_method, product_options, cart_actions, expected_outcome)
+
+tests\test_home.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+portal_page = {'cart_sidebar': &lt;pages.components.cart_sidebar.CartSidebar object at 0x0000000005D56650&gt;, 'home': &lt;pages.automation_p...ect at 0x0000000005D56450&gt;, 'login_popup': &lt;pages.components.login_popup.LoginPopup object at 0x0000000005D56750&gt;, ...}
+test_name = 'Quick View - Invalid Quantity -1', add_method = 'quick_view', product_options = {'color': 'Blue', 'quantity': -1, 'size': 'L'}, cart_actions = None
+expected_outcome = 'failure'
+
+    async def run_test_case(portal_page, test_name, add_method, product_options=None, cart_actions=None, expected_outcome="success"):
+        home = portal_page["home"]
+        page = home.page
+    
+        print(f"\nRunning test case: {test_name}")
+    
+        result = {
+            "test_name": test_name,
+            "passed": True,
+            "details": [],
+            "expected_outcome": expected_outcome
+        }
+    
+        try:
+            await home.navigate()
+            await home.close_newsletter_popup()
+            await home.scroll_down()
+            await home.scroll_down()
+    
+            if add_method == "quick_view":
+                try:
+                    await home.quick_view_product()
+                    if product_options:
+                        await home.view_select_product_options_and_click_find_your_size(product_options)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al usar 'Quick View': {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en 'Quick View': {str(e)}")
+                    else:
+                        result["passed"] = True
+    
+            elif add_method == "quick_add":
+                try:
+                    await home.quick_add_product()
+                    if product_options:
+                        await home.add_select_product_options_and_quick_add_to_cart(product_options)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al usar 'Quick Add': {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en 'Quick Add': {str(e)}")
+                    else:
+                        result["passed"] = True
+            else:
+                raise ValueError(f"Método de adición inválido: {add_method}")
+    
+            if cart_actions:
+                try:
+                    await home.interact_with_cart(cart_actions)
+                except Exception as e:
+                    result["passed"] = False
+                    result["details"].append(f"Error al interactuar con el carrito: {str(e)}")
+                    if expected_outcome != "failure":
+                        pytest.fail(f"Fallo inesperado en interacciones con el carrito: {str(e)}")
+    
+            cart_items = page.locator("#shoppingCart .tf-mini-cart-item")
+            item_count = await cart_items.count()
+    
+            if expected_outcome == "success":
+                if item_count &lt;= 0:
+                    result["passed"] = False
+                    result["details"].append("El carrito está vacío cuando se esperaba al menos un elemento.")
+                    pytest.fail(f"Fallo en '{test_name}': El carrito está vacío.")
+            else:
+                if item_count &gt; 0:
+                    result["passed"] = False
+                    result["details"].append("El carrito tiene elementos cuando se esperaba que fallara.")
+&gt;                   pytest.fail(f"Fallo en '{test_name}': El carrito tiene elementos inesperadamente.")
+E                   Failed: Fallo en 'Quick View - Invalid Quantity -1': El carrito tiene elementos inesperadamente.
+
+tests\test_home.py:76: Failed</failure></testcase></testsuite></testsuites>

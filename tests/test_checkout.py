@@ -44,7 +44,7 @@ async def test_form_input(browser, session, test_field, test_value, test_descrip
         checkout_data["email"],
         checkout_data["notes"]
     )
-    if test_field != "discount_code": await checkout.apply_discount_code(checkout_data["discount_code"])
+    if checkout_data["discount_code"]: await checkout.apply_discount_code(checkout_data["discount_code"])
     await checkout.fill_credit_card_details(
         checkout_data["card_number"],
         checkout_data["expiry"],

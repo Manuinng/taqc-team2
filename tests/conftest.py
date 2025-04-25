@@ -1,7 +1,7 @@
 import pytest
 import pytest_asyncio
 import requests
-from typing import Dict, List, Any, AsyncGenerator
+from typing import List, AsyncGenerator
 from playwright.async_api import async_playwright, Browser, Cookie
 
 from config.config import BASE_URL, TEST_USER
@@ -42,7 +42,7 @@ def cleanup_user():
             print(f"No existing user found for the email {email}.")
 
 
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
+@pytest_asyncio.fixture(loop_scope="module")
 async def browser(request) -> AsyncGenerator[Browser, None]:
     headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
@@ -70,7 +70,7 @@ async def portal_page(browser_page):
     }
 
 
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
+@pytest_asyncio.fixture(loop_scope="module")
 async def session() -> List[Cookie]:
     session = requests.Session()
 
@@ -112,7 +112,7 @@ async def session() -> List[Cookie]:
     return context_cookies
 
 
-@pytest_asyncio.fixture(loop_scope="module", scope="module")
+@pytest_asyncio.fixture(loop_scope="module")
 async def session_ui() -> List[Cookie]:
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)

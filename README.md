@@ -34,8 +34,10 @@ The project's folder structure is as follows:
 ├── tests
 │   ├── conftest.py
 │   │── (test files)
-│    └── test_data
-│        └── (Files with JSON, CSV and data)
+│   └── test_data
+│   │   └── (Files with JSON, CSV and data)
+│   └── utils
+│       └── (shred utilities for the test)
 ```
 
 * `pages`: Contains the Page Object Models (POMs) for the website's pages and components. These POMs encapsulate page-specific interactions, making our tests modular and maintainable.
@@ -45,6 +47,8 @@ The project's folder structure is as follows:
 * `utils`: Contains shared utilities, such as `api_helper.py`, which manages test data via API calls to ensure consistency across all tests.
 
 * `config`: Stores configuration variables in the `config.py` file, including the website's base URL (`https://automation-portal-bootcamp.vercel.app`) and test user credentials (`{"email": "team2@taqc.com", "password": "team2"}`).
+
+* `planning`: Include all the testing planning for the different pages, with their verification and data used.
 
 ## Technologies
 

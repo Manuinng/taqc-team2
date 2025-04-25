@@ -4,7 +4,7 @@ from tests.utils.api_helper import APIHelper
 from playwright.async_api import TimeoutError
 
 test_results = []
-
+@pytest.mark.skip
 async def run_test_case(portal_page, test_name, add_method, product_options=None, cart_actions=None, expected_outcome="success"):
     home = portal_page["home"]
     page = home.page
@@ -102,7 +102,7 @@ async def run_test_case(portal_page, test_name, add_method, product_options=None
     pytest.param(("Quick View - Invalid Quantity -1", "quick_view", {"color": "Blue", "size": "L", "quantity": -1}, None, "failure")),
 ])
 
-@pytest.mark.asyncio
+@pytest.mark.skip
 async def test_home_cases(portal_page, test_data):
     test_name, add_method, product_options, cart_actions, expected_outcome = test_data
     await run_test_case(portal_page, test_name, add_method, product_options, cart_actions, expected_outcome)

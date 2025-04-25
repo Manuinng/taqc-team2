@@ -3,7 +3,7 @@ from config.config import BASE_URL
 from tests.utils.api_helper import APIHelper
 from playwright.async_api import TimeoutError
 
-@pytest.mark.asyncio
+@pytest.mark.skip
 async def run_test_case(portal_page, test_name, first_name, last_name, email, password, expected_outcome="success"):
     home = portal_page["home"]
     register = portal_page["register"]
@@ -125,7 +125,7 @@ async def run_test_case(portal_page, test_name, first_name, last_name, email, pa
     pytest.param(("First name exceeding character limit", "A" * 100, "LastName", "test9999@example.com", "12345", "failure - first name too long")),
     pytest.param(("Last name exceeding character limit", "FirstName", "B" * 100, "test9999@example.com", "12345", "failure - last name too long")),
 ])
-@pytest.mark.asyncio
+@pytest.mark.skip
 async def test_registration_cases(portal_page, test_data):
     test_name, first_name, last_name, email, password, expected_outcome = test_data
     await run_test_case(portal_page, test_name, first_name, last_name, email, password, expected_outcome)

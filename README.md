@@ -37,7 +37,7 @@ The project's folder structure is as follows:
 │   └── test_data
 │   │   └── (Files with JSON, CSV and data)
 │   └── utils
-│       └── (shred utilities for the test)
+│       └── (shared utilities for the test)
 ```
 
 * `pages`: Contains the Page Object Models (POMs) for the website's pages and components. These POMs encapsulate page-specific interactions, making our tests modular and maintainable.

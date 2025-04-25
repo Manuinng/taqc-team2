@@ -1,6 +1,6 @@
 import pytest
 from config.config import BASE_URL
-from utils.api_helper import APIHelper
+from tests.utils.api_helper import APIHelper
 from playwright.async_api import TimeoutError
 
 test_results = []

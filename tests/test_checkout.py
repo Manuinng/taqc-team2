@@ -44,7 +44,7 @@ async def test_form_input(browser, session, test_field, test_value, test_descrip
         checkout_data["email"],
         checkout_data["notes"]
     )
-    await checkout.apply_discount_code(checkout_data["discount_code"])
+    if test_field == "discount_code": await checkout.apply_discount_code(checkout_data["discount_code"])
     await checkout.fill_credit_card_details(
         checkout_data["card_number"],
         checkout_data["expiry"],
@@ -64,10 +64,10 @@ async def test_form_input(browser, session, test_field, test_value, test_descrip
     except TimeoutError:
         pass
 
-    if test_field:
-        assert not order_placed, f"Order was placed with {test_description}"
+    if test_field and test_field != "discount_code":
+        assert not order_placed, f"Invalid order was placed with {test_description}"
     else:
-        assert order_placed, "Order with valid data wasn't placed after 2s"
+        assert order_placed, f"Valid order with {test_description} wasn't placed after 2s"
 
 @pytest.mark.parametrize("test_case", [
     "not logged in",

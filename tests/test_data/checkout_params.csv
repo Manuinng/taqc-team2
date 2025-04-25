@@ -1,0 +1,28 @@
+test_field,test_value,test_description
+,,valid data
+first_name,,empty first name
+last_name,,empty last name
+country,,empty country
+city,,empty city
+address,,empty address
+phone,,empty phone number
+email,,empty email
+card_number,,empty card number
+expiry,,empty card date
+cvc,,empty card cvc
+tos_checkbox,False,unchecked terms and conditions
+email,.email@example.com,email local part starts with special character
+email,invalid..email@example.com,email local part has repeated special characters
+email,email@example,email has no top level domain
+email,email@example.c-m,email top level domain has special character
+email,email@example.c,email top level domain too short (<2 chars)
+phone,not_a_phone_number,phone number has invalid chars
+phone,+999999,phone number too short (<7 digits)
+phone,+9999999999999999,phone number too long (>15 digits)
+card_number,not_a_card_number,card number does not have only digits
+card_number,0000000000000001,card number fails luhn algorithm
+expiry,not_a_date,card expiration date is not a date
+expiry,13/26,card expiration date is invalid date
+expiry,12/24,card has expired
+cvc,abc,card cvc is not a number
+discount_code,,no discount code

@@ -12,6 +12,7 @@ from pages.register_form import RegisterForm
 from pages.login_form import LoginForm
 from pages.components import CartSidebar
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--no-headless",
@@ -19,6 +20,12 @@ def pytest_addoption(parser):
         default=True,
         help="Run tests with GUI instead of headless"
     )
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_configure(config):
+    config.addinivalue_line("markers", "asyncio: marks a test as asynchronous")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_user():
@@ -34,6 +41,7 @@ def cleanup_user():
         else:
             print(f"No existing user found for the email {email}.")
 
+
 @pytest_asyncio.fixture(scope="function")
 async def browser(request) -> AsyncGenerator[Browser, None]:
     headless_cmd = request.config.getoption("--no-headless")
@@ -42,11 +50,13 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         yield browser
         await browser.close()
 
+
 @pytest_asyncio.fixture(scope="function")
 async def browser_page(browser):
     page = await browser.new_page()
     yield page
     await page.close()
+
 
 @pytest_asyncio.fixture(scope="function")
 async def portal_page(browser_page):
@@ -58,6 +68,7 @@ async def portal_page(browser_page):
         "cart_sidebar": CartSidebar(browser_page),
         "login_popup": LoginPopup(browser_page),
     }
+
 
 @pytest_asyncio.fixture(scope="module")
 async def session() -> List[Cookie]:
@@ -100,6 +111,7 @@ async def session() -> List[Cookie]:
 
     return context_cookies
 
+
 @pytest_asyncio.fixture(scope="module")
 async def session_ui() -> List[Cookie]:
     async with async_playwright() as p:
@@ -123,6 +135,7 @@ async def session_ui() -> List[Cookie]:
         await browser.close()
         return session
 
+
 @pytest_asyncio.fixture(scope="module")
 async def checkout_valid_data() -> Dict[str, Any]:
     return {
@@ -140,6 +153,7 @@ async def checkout_valid_data() -> Dict[str, Any]:
         "cvc": "123",
         "tos_checkbox": True
     }
+
 
 @pytest_asyncio.fixture(scope="module")
 async def cart_valid_data() -> List[Dict[str, Any]]:
@@ -166,7 +180,3 @@ async def cart_valid_data() -> List[Dict[str, Any]]:
             "quantity": 1
         }
     ]
-
-@pytest.hookimpl(tryfirst=True)
-def pytest_configure(config):
-    config.addinivalue_line("markers", "asyncio: marks a test as asynchronous")

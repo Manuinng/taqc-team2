@@ -29,11 +29,13 @@ The project's folder structure is as follows:
 │       └── (component POMs)
 ├── pytest.ini
 ├── requirements.txt
+├── planning
+│   └── (Test explanation for the POMs)
 ├── tests
 │   ├── conftest.py
-│   └── (test files)
-└── config
-    └── config.py
+│   │── (test files)
+│    └── test_data
+│        └── (Files with JSON, CSV and data)
 ```
 
 * `pages`: Contains the Page Object Models (POMs) for the website's pages and components. These POMs encapsulate page-specific interactions, making our tests modular and maintainable.

@@ -1,6 +1,6 @@
 import pytest
 import asyncio
-from config.config import data
+from tests.test_data.quantity_data import data
 from pages import ProductPage, AutomationPortal
 
 @pytest.mark.asyncio(loop_scope="module")

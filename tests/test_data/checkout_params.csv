@@ -25,3 +25,4 @@ expiry,not_a_date,card expiration date is not a date
 expiry,13/26,card expiration date is invalid date
 expiry,12/24,card has expired
 cvc,abc,card cvc is not a number
+discount_code,,no discount code

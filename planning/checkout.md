@@ -7,9 +7,10 @@
 - [Test Case 3: Validate invalid emails are not accepted by the form](#test-case-3-validate-invalid-emails-are-not-accepted-by-the-form)
 - [Test Case 4: Validate invalid phone numbers are not accepted by the form](#test-case-4-validate-invalid-phone-numbers-are-not-accepted-by-the-form)
 - [Test Case 5: Validate invalid credit card data is not accepted by the form](#test-case-5-validate-invalid-credit-card-data-is-not-accepted-by-the-form)
-- [Test Case 6: Validate only logged in users can access the checkout page](#test-case-6-validate-only-logged-in-users-can-access-the-checkout-page)
-- [Test Case 7: Validate user can't access the checkout page with an empty cart](#test-case-7-validate-user-cant-access-the-checkout-page-with-an-empty-cart)
-- [Test Case 8: Validate placed order data matches the data submitted in the checkout form](#test-case-8-validate-placed-order-data-matches-the-data-submitted-in-the-checkout-form)
+- [Test Case 6: Validate form can be submitted without a discount code](#test-case-6-validate-form-can-be-submitted-without-a-discount-code)
+- [Test Case 7: Validate only logged in users can access the checkout page](#test-case-7-validate-only-logged-in-users-can-access-the-checkout-page)
+- [Test Case 8: Validate user can't access the checkout page with an empty cart](#test-case-8-validate-user-cant-access-the-checkout-page-with-an-empty-cart)
+- [Test Case 9: Validate placed order data matches the data submitted in the checkout form](#test-case-9-validate-placed-order-data-matches-the-data-submitted-in-the-checkout-form)
 
 ## Test Case 1: Validate successful form submission with valid data
 
@@ -217,7 +218,25 @@ Verify checkout form is not submitted if credit card data is invalid
 
 Order placement is rejected by the website and the invalid credit card field is highlighted with an error message pointing out the error
 
-## Test Case 6: Validate only logged in users can access the checkout page
+## Test Case 6: Validate form can be submitted without a discount code
+
+### Objective
+Verify the form can be submitted with the discount field empty
+
+### Preconditions
+- User is on the checkout page
+- User is logged in
+- User has items in the cart
+
+### Test Steps
+1. Fill the form with valid data while leaving the discount code field empty
+2. Attempt to submit the form
+
+### Expected Result
+
+Order placement is accepted by the website
+
+## Test Case 7: Validate only logged in users can access the checkout page
 
 ### Objective
 Verify the user can't access the checkout page if not logged in
@@ -233,7 +252,7 @@ Verify the user can't access the checkout page if not logged in
 
 User can't access the checkout page and instead is redirected to the login page.
 
-## Test Case 7: Validate user can't access the checkout page with an empty cart
+## Test Case 8: Validate user can't access the checkout page with an empty cart
 
 ### Objective
 Verify the user can't access the checkout page if their shopping cart is empty
@@ -249,7 +268,7 @@ Verify the user can't access the checkout page if their shopping cart is empty
 
 User can't access the checkout page and instead is shown a popup pointing out their shopping cart is empty.
 
-## Test Case 8: Validate placed order data matches the data submitted in the checkout form
+## Test Case 9: Validate placed order data matches the data submitted in the checkout form
 
 ### Objective
 Verify the order placed in the API matches the order sent with the checkout form

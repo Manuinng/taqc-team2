@@ -10,7 +10,7 @@
 - [Test Case 6: Validate Find Size button](#test-case-6-validate-find-size-button)
 - [Test Case 7: Validate the option selected from the product in the cart](#test-case-7-validate-the-option-selected-from-the-product-in-the-cart)
 - [Test Case 8: Validate the functionality of the wishlist option](#test-case-8-validate-the-functionality-of-the-wishlist-option)
-- [Test Case 9: Validate the discount of the price](#test-case-8-validate-the-discount-of-the-price)
+- [Test Case 9: Validate the discount of the price](#test-case-9-validate-the-discount-of-the-price)
 
 ### Test Case 1: Validate successful product submission with valid data
 

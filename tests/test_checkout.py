@@ -1,10 +1,10 @@
 import pytest
 from pytest_csv_params.decorator import csv_params
-import requests
 import json
 from pages import CheckoutPage
 from playwright.async_api import expect, TimeoutError
 from config.config import BASE_URL
+from tests.utils.api_helper import APIHelper
 
 def camel_to_snake(camel_case_str):
     snake_case_str = []
@@ -130,10 +130,7 @@ async def test_api_order_placed(browser, session):
     except TimeoutError:
         raise TimeoutError("Order was not placed after 2s")
 
-    api_order = requests.get(f"{BASE_URL}/api/orders/{order_id}")
-    assert api_order.ok, f"Failed to retrieve order {order_id} from API - {api_order.status_code}"
-
-    order_data = api_order.json()
+    order_data = APIHelper.get_order(order_id)
     order_api_id = order_data.pop("id", None)
     order_data.pop("createdAt", None)
     cart_data = order_data.pop("items", [])

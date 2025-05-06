@@ -1,12 +1,12 @@
 import pytest
 import pytest_asyncio
 import requests
-from typing import List, AsyncGenerator
-from playwright.async_api import async_playwright, Browser, Cookie
-
-from config.config import BASE_URL, TEST_USER
+from typing import List, Tuple, Dict, AsyncGenerator
+from playwright.async_api import async_playwright, Browser, Page, Cookie
+from config.config import TEST_USER
 from tests.utils.api_helper import APIHelper
-from pages import AutomationPortal, Navbar, LoginPopup
+from tests.utils.common_utils import load_json
+from pages import AutomationPortal, Navbar, LoginPopup, CheckoutPage
 from pages.automation_portal import AutomationPortal as AutoPortal
 from pages.register_form import RegisterForm
 from pages.login_form import LoginForm
@@ -21,7 +21,6 @@ def pytest_addoption(parser):
         help="Run tests with GUI instead of headless"
     )
 
-
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
     config.addinivalue_line("markers", "asyncio: marks a test as asynchronous")
@@ -35,32 +34,31 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         yield browser
         await browser.close()
 
+@pytest_asyncio.fixture(loop_scope="module")
+async def cart_valid_data() -> Dict:
+    return load_json("cart_valid_data.json")
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_checkout(browser, session, cart_valid_data) -> Tuple[Page, CheckoutPage, Dict]:
+    context = await browser.new_context()
+    checkout_valid_data = load_json("checkout_valid_data.json")
+
+    await context.add_cookies(session)
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+
+    page = await context.new_page()
+    checkout = CheckoutPage(page)
+    await checkout.navigate()
+
+    return page, checkout, checkout_valid_data
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def session() -> List[Cookie]:
     session = requests.Session()
 
-    response_csrf = session.get(f"{BASE_URL}/api/auth/csrf")
-    if response_csrf.status_code == 200:
-        csrf_token = response_csrf.json().get('csrfToken')
-    else:
-        raise requests.exceptions.HTTPError(f"Failed to retrieve CSRF token: {response_csrf.status_code}")
-
-    data = {
-        "email": TEST_USER["email"],
-        "password": TEST_USER["password"],
-        "redirect": "false",
-        "csrfToken": csrf_token,
-        "callbackUrl": f"{BASE_URL}/login",
-        "json": "true"
-    }
-    response_login = session.post(f"{BASE_URL}/api/auth/callback/credentials", data=data)
-    if response_login.status_code != 200:
-        raise requests.exceptions.HTTPError(f"Login failed: {response_login.status_code}")
-
-    response_session = session.get(f"{BASE_URL}/api/auth/session")
-    if response_session.status_code != 200:
-        raise requests.exceptions.HTTPError(f"Failed to retrieve session cookie: {response_session.status_code}")
+    csrf_token = APIHelper.get_csrf_token(session)
+    APIHelper.login(session, TEST_USER["email"], TEST_USER["password"], csrf_token)
+    APIHelper.get_auth_session(session)
 
     context_cookies = []
     for cookie in session.cookies:

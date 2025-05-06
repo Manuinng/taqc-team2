@@ -1,38 +1,15 @@
 import pytest
 from pytest_csv_params.decorator import csv_params
-import requests
-import json
 from pages import CheckoutPage
 from playwright.async_api import expect, TimeoutError
 from config.config import BASE_URL
-
-def camel_to_snake(camel_case_str):
-    snake_case_str = []
-    for char in camel_case_str:
-        if char.isupper() and snake_case_str:
-            snake_case_str.append('_')
-            snake_case_str.append(char.lower())
-        else:
-            snake_case_str.append(char)
-    return ''.join(snake_case_str)
-
-def load_json(file_name):
-    file_path = f"./tests/test_data/{file_name}"
-    with open(file_path, 'r') as json_file:
-        return json.load(json_file)
+from tests.utils.api_helper import APIHelper
+from tests.utils.common_utils import camel_to_snake
 
 @csv_params(data_file="./tests/test_data/checkout_params.csv")
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_input(browser, session, test_field, test_value, test_description):
-    context = await browser.new_context()
-    await context.add_cookies(session)
-    cart_data = load_json("cart_valid_data.json")
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
-    page = await context.new_page()
-
-    checkout = CheckoutPage(page)
-    await checkout.navigate()
-    checkout_data = load_json("checkout_valid_data.json")
+async def test_form_input(setup_checkout, test_field, test_value, test_description):
+    page, checkout, checkout_data = setup_checkout
     if test_field: checkout_data[test_field] = test_value
     await checkout.fill_billing_details(
         checkout_data["first_name"],
@@ -74,32 +51,22 @@ async def test_form_input(browser, session, test_field, test_value, test_descrip
     "cart is empty",
 ])
 @pytest.mark.asyncio(loop_scope="module")
-async def test_access(browser, session, test_case):
+async def test_access(browser, session, cart_valid_data, test_case):
     context = await browser.new_context()
 
     if test_case != "not logged in":
         await context.add_cookies(session)
     if test_case != "cart is empty":
-        cart_data = load_json("cart_valid_data.json")
-        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
+        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
 
     page = await context.new_page()
-
     checkout = CheckoutPage(page)
     await checkout.navigate()
     await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout.url, timeout=2000)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_api_order_placed(browser, session):
-    context = await browser.new_context()
-    await context.add_cookies(session)
-    cart_data = load_json("cart_valid_data.json")
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_data}))")
-    page = await context.new_page()
-
-    checkout = CheckoutPage(page)
-    await checkout.navigate()
-    checkout_data = load_json("checkout_valid_data.json")
+async def test_api_order_placed(setup_checkout):
+    page, checkout, checkout_data = setup_checkout
     await checkout.fill_billing_details(
         checkout_data["first_name"],
         checkout_data["last_name"],
@@ -130,10 +97,7 @@ async def test_api_order_placed(browser, session):
     except TimeoutError:
         raise TimeoutError("Order was not placed after 2s")
 
-    api_order = requests.get(f"{BASE_URL}/api/orders/{order_id}")
-    assert api_order.ok, f"Failed to retrieve order {order_id} from API - {api_order.status_code}"
-
-    order_data = api_order.json()
+    order_data = APIHelper.get_order(order_id)
     order_api_id = order_data.pop("id", None)
     order_data.pop("createdAt", None)
     cart_data = order_data.pop("items", [])

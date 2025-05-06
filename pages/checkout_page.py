@@ -1,4 +1,4 @@
-from playwright.async_api import Page
+from playwright.async_api import Page, expect
 from config.config import BASE_URL
 
 class CheckoutPage:
@@ -24,9 +24,11 @@ class CheckoutPage:
     async def __fill_input(self, selector, value):
         await self.page.locator(selector).scroll_into_view_if_needed()
         await self.page.fill(selector, value)
+        await expect(self.page.locator(selector)).to_have_value(value)
 
     async def navigate(self):
         await self.page.goto(self.url)
+        await expect(self.page).to_have_url(self.url)
 
     async def fill_billing_details(
             self,
@@ -56,6 +58,7 @@ class CheckoutPage:
         if country:
             await self.page.locator(self.country).scroll_into_view_if_needed()
             await self.page.select_option(self.country, country)
+            await expect(self.page.locator(self.country)).to_have_value(country)
 
     async def apply_discount_code(self, code=None):
         if code:
@@ -81,6 +84,7 @@ class CheckoutPage:
     async def click_tos_checkbox(self):
         await self.page.locator(self.tos_checkbox).scroll_into_view_if_needed()
         await self.page.click(self.tos_checkbox)
+        await expect(self.page.locator(self.tos_checkbox)).to_be_checked()
 
     async def place_order(self):
         await self.page.locator(self.place_order_button).scroll_into_view_if_needed()

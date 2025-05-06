@@ -53,6 +53,13 @@ async def setup_checkout(browser, session, cart_valid_data) -> Tuple[Page, Check
     return page, checkout, checkout_valid_data
 
 @pytest_asyncio.fixture(loop_scope="module")
+async def setup_product(browser, session) -> Tuple[Page, Dict]:
+    context = await browser.new_context()
+    await context.add_cookies(session)
+    page = await context.new_page()
+    return page
+
+@pytest_asyncio.fixture(loop_scope="module")
 async def session() -> List[Cookie]:
     session = requests.Session()
 

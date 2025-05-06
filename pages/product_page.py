@@ -140,7 +140,7 @@ class ProductPage:
         wishlist_info = await self.page.locator("#wrapper > section > div > div > div:nth-child(4) > div.card-product-wrapper > a").is_visible()
         return wishlist_info
 
-    async def get_discount_price(self): #Verification for the discount and transformation of text to float
+    async def get_actual_discount_price(self): #Verification for the discount and transformation of text to float
         real_price_call = await self.real_price.text_content()
         real_price_call = float(real_price_call.replace("$", ""))
         discount_price = await self.discount.text_content()

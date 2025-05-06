@@ -1,12 +1,12 @@
 import pytest
 import pytest_asyncio
 import requests
-from typing import List, AsyncGenerator
-from playwright.async_api import async_playwright, Browser, Cookie
-
+from typing import List, Tuple, Dict, AsyncGenerator
+from playwright.async_api import async_playwright, Browser, Page, Cookie
 from config.config import TEST_USER
 from tests.utils.api_helper import APIHelper
-from pages import AutomationPortal, Navbar, LoginPopup
+from tests.utils.common_utils import load_json
+from pages import AutomationPortal, Navbar, LoginPopup, CheckoutPage
 from pages.automation_portal import AutomationPortal as AutoPortal
 from pages.register_form import RegisterForm
 from pages.login_form import LoginForm
@@ -20,7 +20,6 @@ def pytest_addoption(parser):
         default=True,
         help="Run tests with GUI instead of headless"
     )
-
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
@@ -50,6 +49,23 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         yield browser
         await browser.close()
 
+@pytest_asyncio.fixture(loop_scope="module")
+async def cart_valid_data() -> Dict:
+    return load_json("cart_valid_data.json")
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_checkout(browser, session, cart_valid_data) -> Tuple[Page, CheckoutPage, Dict]:
+    context = await browser.new_context()
+    checkout_valid_data = load_json("checkout_valid_data.json")
+
+    await context.add_cookies(session)
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+
+    page = await context.new_page()
+    checkout = CheckoutPage(page)
+    await checkout.navigate()
+
+    return page, checkout, checkout_valid_data
 
 @pytest_asyncio.fixture(scope="function")
 async def browser_page(browser):

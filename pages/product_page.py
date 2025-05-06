@@ -1,4 +1,4 @@
-from playwright.async_api import Page
+from playwright.async_api import Page, expect
 import asyncio
 
 class ProductPage:
@@ -13,7 +13,7 @@ class ProductPage:
         self.inputQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > input[type=text]")
         self.btnCompare = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-extra-link > a:nth-child(1)")
         self.btnBuy = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > div > a.btns-full")
-        self.btnCate = page.locator("#wrapper > div > div > div > div.tf-breadcrumb-prev-next > a.tf-breadcrumb-back.hover-tooltip.center")
+        self.btnCategory = page.locator("#wrapper > div > div > div > div.tf-breadcrumb-prev-next > a.tf-breadcrumb-back.hover-tooltip.center")
         self.btnFind = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(2) > div > a")
         self.btnMore = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > div > a.payment-more-option")
         self.btnComparepro = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-buy-button > form > a.tf-product-btn-wishlist.hover-tooltip.box-icon.bg_white.compare.btn-icon-action")
@@ -24,24 +24,31 @@ class ProductPage:
         self.discount = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-price > div.badges-on-sale")
 
     async def selectColor(self): #Button for color selection
+        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
         await self.btnColor.click()
 
     async def selectSize(self): #Button for size selection
+        await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
         await self.btnSize.click()
 
     async def selectMore(self): #Button for more selection of products.
+        await expect(self.moreQuantity,"The button for more quantity is not visible").to_be_visible()
         await self.moreQuantity.click()
 
     async def selectLess(self): #Button for less selection of products.
+        await expect(self.lessQuantity,"The button for less quantity is not visible").to_be_visible()
         await self.lessQuantity.click()
 
     async def inputSection(self, input_singular:str): #Input quantity of products
+        await expect(self.inputQuantity,"The input for quantity is not visible").to_be_visible()
         await self.inputQuantity.fill(input_singular)
 
     async def addSelection(self): #Button for add to cart
+        await expect(self.btnAdd,"The button for add product is not visible").to_be_visible()
         await self.btnAdd.click()
 
     async def compareSection(self): #Button for compare options
+        await expect(self.btnCompare,"The button for compare color is not visible").to_be_visible()
         await self.btnCompare.click()
 
     async def selectProduct(self): #Selection of product
@@ -50,48 +57,66 @@ class ProductPage:
 
     async def addCart(self, input_test:str): #Flow for selection of product options and add to cart 
         await self.btnColor.wait_for(state='visible')
+        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
         await self.btnColor.click()
+        await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
         await self.btnSize.click()
+        await expect(self.inputQuantity,"The input for quantity is not visible").to_be_visible()
         await self.inputQuantity.fill(input_test)
+        await expect(self.btnAdd,"The button for add product is not visible").to_be_visible()
         await self.btnAdd.click()
         await self.page.wait_for_timeout(1000)
 
     async def viewCompare(self): #Use of compare color without any color to compare
+        await expect(self.btnCompare,"The button for compare color is not visible").to_be_visible()
         await self.btnCompare.click()
         await self.page.wait_for_selector("#compare_color > div > div", state="visible", timeout=5000)
+        await expect(self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(2) > div.tf-compare-color-top > label"),"The remove option for the first color is no available").to_be_visible()
         await self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(2) > div.tf-compare-color-top > label").click()
+        await expect(self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(4) > div.tf-compare-color-top > label"),"The remove option for the second color is no available").to_be_visible()
         await self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(4) > div.tf-compare-color-top > label").click()
+        await expect(self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(6) > div.tf-compare-color-top > label"),"The remove option for the third color is no available").to_be_visible()
         await self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(6) > div.tf-compare-color-top > label").click()
+        await expect(self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(8) > div.tf-compare-color-top > label"),"The remove option for the fourth color is no available").to_be_visible()
         await self.page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div > div:nth-child(8) > div.tf-compare-color-top > label").click()
         await self.page.wait_for_timeout(1000)
+        await expect(self.page.locator("#compare_color > div > div > div.header > span"),"The close option for the compare color is not visible").to_be_visible()
         await self.page.locator("#compare_color > div > div > div.header > span").click()
+        await expect(self.btnCompare,"The button for compare color is not visible").to_be_visible()
         await self.btnCompare.click()
         await self.page.wait_for_timeout(1000)
 
     async def buyOption(self): #Use of buy with option
+        await expect(self.btnBuy,"The button for buy with option is not visible").to_be_visible()
         await self.btnBuy.click()
         await self.page.wait_for_timeout(1000)
 
     async def categoryOption(self): #Use of category button
+        await expect(self.btnCategory,"The button for category is not visible").to_be_visible()
         await self.btnCate.click()
         await self.page.wait_for_timeout(1000)
 
     async def findOption(self): #Button for the find size option
+        await expect(self.btnFind,"The button for find size is not visible").to_be_visible()
         await self.btnFind.click()
         await self.page.wait_for_timeout(1000)
 
     async def morepayOptions(self): #Button for more pay option
+        await expect(self.btnMore,"The button for more option to pay is not visible").to_be_visible()
         await self.btnMore.click()
         await self.page.wait_for_timeout(1000)
 
     async def compareProduct(self): #Button for compare product option
+        await expect(self.btnComparepro,"The button for compare product is not visible").to_be_visible()
         await self.btnComparepro.click()
         await self.page.wait_for_timeout(1000)
 
     async def wishlistOption(self): #Use of whislist button for the product
         await self.btnWish.wait_for(state='visible')
+        await expect(self.btnWish,"The button for add to wishlist is not visible").to_be_visible()
         await self.btnWish.click()
         await self.btnNavwish.wait_for(state='visible')
+        await expect(self.btnNavwish,"The button for the wishlist is not visible").to_be_visible()
         await self.btnNavwish.click()
         await self.page.wait_for_timeout(2000)
 

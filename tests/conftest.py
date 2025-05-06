@@ -43,11 +43,14 @@ def cleanup_user():
 
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def browser(request) -> AsyncGenerator[Browser, None]:
+async def browser(request, session) -> AsyncGenerator[Browser, None]:
     headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=headless_cmd)
-        yield browser
+        context = await browser.new_context()
+        await context.add_cookies(session)
+        page = await context.new_page()
+        yield page
         await browser.close()
 
 

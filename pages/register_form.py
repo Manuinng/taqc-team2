@@ -1,4 +1,5 @@
-from playwright.async_api import Page
+from config.config import BASE_URL
+from playwright.async_api import Page, expect
 
 class RegisterForm:
     def __init__(self, page: Page):
@@ -36,3 +37,7 @@ class RegisterForm:
     async def submit_registration(self):
         await self.page.locator(self.register_button).scroll_into_view_if_needed()
         await self.page.click(self.register_button)
+        await self.page.wait_for_timeout(1000)
+    
+    async def validate_registration_failed(self, expected_url):
+        await expect(self.page).to_have_url(expected_url, timeout=1000)

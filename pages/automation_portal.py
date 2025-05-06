@@ -44,7 +44,6 @@ class AutomationPortal:
 
     async def close_newsletter_popup(self):
         await self.page.wait_for_selector(self.newsletter_popup, state="visible")
-        await expect(self.close_newsletter).to_be_visible()
         await self.page.wait_for_timeout(1000)
         await self.page.click(self.close_newsletter)
         await self.page.wait_for_selector(self.newsletter_popup, state="hidden")

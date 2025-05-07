@@ -2,34 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+
+        stage('env') {
             steps {
-                checkout scm
+                sh '. venv/bin/activate'
             }
         }
-
-    stage('Verificar Python') {
-        steps {
-            sh 'python3 --version || python --version'
+        
+        stage('Instalación dependencias') {
+            steps {
+                sh 'pip install --break-system-packages -r requirements.txt'
+            }
         }
-    }
-
-    stage('Instalación dependencias') {
-        steps {
-            sh 'pip install -r requirements.txt'
+        
+        stage('Pruebas') {
+            steps {
+                sh 'pytest tests/test_product.py'
+            }
         }
-    }
-
-    stage('Instalación Playwright') {
-        steps {
-            sh 'python install playwright'
-        }
-    }
-
-    stage('Pruebas') {
-        steps {
-            sh 'pytest'
-        }
-    }
     }
 }

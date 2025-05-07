@@ -93,7 +93,7 @@ class ProductPage:
 
     async def categoryOption(self): #Use of category button
         await expect(self.btnCategory,"The button for category is not visible").to_be_visible()
-        await self.btnCate.click()
+        await self.btnCategory.click()
         await self.page.wait_for_timeout(1000)
 
     async def findOption(self): #Button for the find size option

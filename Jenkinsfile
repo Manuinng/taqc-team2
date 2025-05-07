@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stages('Checkout' {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
-        })
+        }
     }
 
     stage('Verificar Python') {

@@ -7,7 +7,6 @@ pipeline {
                 checkout scm
             }
         }
-    }
 
     stage('Verificar Python') {
         steps {
@@ -31,5 +30,6 @@ pipeline {
         steps {
             sh 'pytest'
         }
+    }
     }
 }

@@ -135,11 +135,11 @@ async def test_find_size(setup_product):
     assert not product.get_find_size, "The 'Find Size' button is not working."
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_wishlist_option(browser):
-    home = AutomationPortal(browser)
+async def test_wishlist_option(setup_product):
+    home = AutomationPortal(setup_product)
     await home.navigate()
     await home.close_newsletter_popup()
-    product = ProductPage(browser)
+    product = ProductPage(setup_product)
     await product.selectProduct()
     await product.wishlistOption()
     assert product.get_wishlist_info, "No products were found in the wishlist."

@@ -1,5 +1,6 @@
-from playwright.async_api import Page, expect
+from playwright.async_api import Page, expect, TimeoutError
 from config.config import BASE_URL
+from uuid import UUID
 
 class CheckoutPage:
     def __init__(self, page: Page):
@@ -16,8 +17,8 @@ class CheckoutPage:
         self.discount_code = "input[placeholder='Discount code']"
         self.apply_discount_button = "a.tf-btn.btn-sm.radius-3.btn-fill.btn-icon.animate-hover-btn:has-text('Apply')"
         self.card_number = "input[placeholder='Card Number (try 4242424242424242)']"
-        self.card_date = "input[placeholder='MM/YY']"
-        self.card_cvc = "input[placeholder='CVC']"
+        self.expiry = "input[placeholder='MM/YY']"
+        self.cvc = "input[placeholder='CVC']"
         self.tos_checkbox = "#check-agree"
         self.place_order_button = "button.tf-btn.btn-fill.btn-icon.animate-hover-btn:has-text('Place order')"
 
@@ -40,6 +41,9 @@ class CheckoutPage:
             phone=None,
             email=None,
             notes=None,
+            card_number=None,
+            expiry=None,
+            cvc=None,
     ):
         fields = [
             (self.first_name, first_name),
@@ -49,6 +53,9 @@ class CheckoutPage:
             (self.phone, phone),
             (self.email, email),
             (self.notes, notes),
+            (self.card_number, card_number),
+            (self.expiry, expiry),
+            (self.cvc, cvc),
     ]
 
         for selector, value in fields:
@@ -65,27 +72,23 @@ class CheckoutPage:
             await self.__fill_input(self.discount_code, code)
             await self.page.click(self.apply_discount_button)
 
-    async def fill_credit_card_details(
-            self,
-            card_number=None,
-            card_date=None,
-            card_cvc=None,
-    ):
-        if card_number:
-            await self.__fill_input(self.card_number, card_number)
-
-        if card_date or card_cvc:
-            await self.page.locator(self.card_date).scroll_into_view_if_needed()
-            if card_date:
-                await self.page.fill(self.card_date, card_date)
-            if card_cvc:
-                await self.page.fill(self.card_cvc, card_cvc)
-
     async def click_tos_checkbox(self):
         await self.page.locator(self.tos_checkbox).scroll_into_view_if_needed()
         await self.page.click(self.tos_checkbox)
         await expect(self.page.locator(self.tos_checkbox)).to_be_checked()
 
-    async def place_order(self):
+    async def place_order(self) -> UUID | bool:
         await self.page.locator(self.place_order_button).scroll_into_view_if_needed()
-        await self.page.click(self.place_order_button)
+
+        try:
+            async with self.page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
+                await self.page.click(self.place_order_button)
+
+            response = await response_info.value
+            if response.ok:
+                response_data = await response.json()
+                return response_data.get("orderId", False)
+        except TimeoutError:
+            pass
+
+        return False

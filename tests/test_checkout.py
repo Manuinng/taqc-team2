@@ -1,50 +1,27 @@
 import pytest
 from pytest_csv_params.decorator import csv_params
 from pages import CheckoutPage
-from playwright.async_api import expect, TimeoutError
-from config.config import BASE_URL
+from playwright.async_api import expect
 from tests.utils.api_helper import APIHelper
 from tests.utils.common_utils import camel_to_snake
 
 @csv_params(data_file="./tests/test_data/checkout_params.csv")
 @pytest.mark.asyncio(loop_scope = "module")
 async def test_form_input(setup_checkout, test_field, test_value, test_description):
-    page, checkout, checkout_data = setup_checkout
+    checkout_page, checkout_data = setup_checkout
     if test_field: checkout_data[test_field] = test_value
-    await checkout.fill_billing_details(
-        checkout_data["first_name"],
-        checkout_data["last_name"],
-        checkout_data["country"],
-        checkout_data["city"],
-        checkout_data["address"],
-        checkout_data["phone"],
-        checkout_data["email"],
-        checkout_data["notes"]
-    )
-    if checkout_data["discount_code"]: await checkout.apply_discount_code(checkout_data["discount_code"])
-    await checkout.fill_credit_card_details(
-        checkout_data["card_number"],
-        checkout_data["expiry"],
-        checkout_data["cvc"]
-    )
-    if checkout_data["tos_checkbox"]: await checkout.click_tos_checkbox()
 
-    order_placed = False
-    try:
-        async with page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
-            await checkout.place_order()
-        response = await response_info.value
-
-        if response.ok:
-            response_data = await response.json()
-            order_placed = response_data.get("success", False)
-    except TimeoutError:
-        pass
+    discount_code = checkout_data.pop("discount_code", None)
+    check_tos = checkout_data.pop("tos_checkbox", False)
+    await checkout_page.fill_billing_details(**checkout_data)
+    if discount_code: await checkout_page.apply_discount_code(discount_code)
+    if check_tos: await checkout_page.click_tos_checkbox()
+    order_id = await checkout_page.place_order()
 
     if test_field and test_field != "discount_code":
-        assert not order_placed, f"Invalid order was placed with {test_description}"
+        assert not order_id, f"Invalid order was placed with {test_description}"
     else:
-        assert order_placed, f"Valid order with {test_description} wasn't placed after 2s"
+        assert order_id, f"Valid order with {test_description} wasn't placed after 2s"
 
 @pytest.mark.parametrize("test_case", [
     "not logged in",
@@ -60,42 +37,21 @@ async def test_access(browser, session, cart_valid_data, test_case):
         await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
 
     page = await context.new_page()
-    checkout = CheckoutPage(page)
-    await checkout.navigate()
-    await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout.url, timeout=2000)
+    checkout_page = CheckoutPage(page)
+    await checkout_page.navigate()
+    await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout_page.url, timeout=2000)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_api_order_placed(setup_checkout):
-    page, checkout, checkout_data = setup_checkout
-    await checkout.fill_billing_details(
-        checkout_data["first_name"],
-        checkout_data["last_name"],
-        checkout_data["country"],
-        checkout_data["city"],
-        checkout_data["address"],
-        checkout_data["phone"],
-        checkout_data["email"],
-        checkout_data["notes"]
-    )
-    await checkout.apply_discount_code(checkout_data["discount_code"])
-    await checkout.fill_credit_card_details(
-        checkout_data["card_number"],
-        checkout_data["expiry"],
-        checkout_data["cvc"]
-    )
-    await checkout.click_tos_checkbox()
+    checkout_page, checkout_data = setup_checkout
 
-    try:
-        async with page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
-            await checkout.place_order()
-        response = await response_info.value
-
-        assert response.ok, "Failed to place order"
-        response_data = await response.json()
-        assert "orderId" in response_data, "Response does not contain orderId"
-        order_id = response_data.get("orderId")
-    except TimeoutError:
-        raise TimeoutError("Order was not placed after 2s")
+    discount_code = checkout_data.pop("discount_code", None)
+    check_tos = checkout_data.pop("tos_checkbox", False)
+    await checkout_page.fill_billing_details(**checkout_data)
+    if discount_code: await checkout_page.apply_discount_code(discount_code)
+    if check_tos: await checkout_page.click_tos_checkbox()
+    order_id = await checkout_page.place_order()
+    assert order_id, f"Valid order wasn't placed after 2s"
 
     order_data = APIHelper.get_order(order_id)
     order_api_id = order_data.pop("id", None)

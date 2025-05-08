@@ -7,10 +7,6 @@ from config.config import TEST_USER
 from tests.utils.api_helper import APIHelper
 from tests.utils.common_utils import load_json
 from pages import AutomationPortal, Navbar, LoginPopup, CheckoutPage
-from pages.automation_portal import AutomationPortal as AutoPortal
-from pages.register_form import RegisterForm
-from pages.login_form import LoginForm
-from pages.components import CartSidebar
 
 
 def pytest_addoption(parser):
@@ -39,7 +35,7 @@ async def cart_valid_data() -> Dict:
     return load_json("cart_valid_data.json")
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session, cart_valid_data) -> Tuple[Page, CheckoutPage, Dict]:
+async def setup_checkout(browser, session, cart_valid_data) -> Tuple[CheckoutPage, Dict]:
     context = await browser.new_context()
     checkout_valid_data = load_json("checkout_valid_data.json")
 
@@ -47,10 +43,10 @@ async def setup_checkout(browser, session, cart_valid_data) -> Tuple[Page, Check
     await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
 
     page = await context.new_page()
-    checkout = CheckoutPage(page)
-    await checkout.navigate()
+    checkout_page = CheckoutPage(page)
+    await checkout_page.navigate()
 
-    return page, checkout, checkout_valid_data
+    return checkout_page, checkout_valid_data
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def setup_product(browser, session) -> Tuple[Page]:

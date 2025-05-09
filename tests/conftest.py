@@ -1,7 +1,7 @@
 import pytest
 import pytest_asyncio
 import requests
-from typing import List, Tuple, Dict, AsyncGenerator
+from typing import List, Tuple, Dict, Any, AsyncGenerator
 from playwright.async_api import async_playwright, Browser, Page, Cookie
 from config.config import TEST_USER
 from tests.utils.api_helper import APIHelper
@@ -35,7 +35,7 @@ async def cart_valid_data() -> Dict:
     return load_json("cart_valid_data.json")
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session, cart_valid_data) -> Tuple[CheckoutPage, Dict]:
+async def setup_checkout(browser, session: List[Cookie], cart_valid_data: Dict[str, Any]) -> Tuple[CheckoutPage, Dict[str, Any]]:
     context = await browser.new_context()
     checkout_valid_data = load_json("checkout_valid_data.json")
 
@@ -49,7 +49,7 @@ async def setup_checkout(browser, session, cart_valid_data) -> Tuple[CheckoutPag
     return checkout_page, checkout_valid_data
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_product(browser, session) -> Tuple[Page]:
+async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
     context = await browser.new_context()
     await context.add_cookies(session)
     page = await context.new_page()

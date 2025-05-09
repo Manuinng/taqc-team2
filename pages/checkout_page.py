@@ -1,5 +1,6 @@
 from playwright.async_api import Page, expect, TimeoutError
 from config.config import BASE_URL
+from typing import Optional, Dict, Any
 from uuid import UUID
 
 class CheckoutPage:
@@ -22,7 +23,7 @@ class CheckoutPage:
         self.tos_checkbox = "#check-agree"
         self.place_order_button = "button.tf-btn.btn-fill.btn-icon.animate-hover-btn:has-text('Place order')"
 
-    async def __fill_input(self, selector, value):
+    async def __fill_input(self, selector: str, value: str):
         await self.page.locator(selector).scroll_into_view_if_needed()
         await self.page.fill(selector, value)
         await expect(self.page.locator(selector)).to_have_value(value)
@@ -33,17 +34,17 @@ class CheckoutPage:
 
     async def fill_billing_details(
             self,
-            first_name=None,
-            last_name=None,
-            country=None,
-            city=None,
-            address=None,
-            phone=None,
-            email=None,
-            notes=None,
-            card_number=None,
-            expiry=None,
-            cvc=None,
+            first_name: Optional[str] = None,
+            last_name: Optional[str] = None,
+            country: Optional[str] = None,
+            city: Optional[str] = None,
+            address: Optional[str] = None,
+            phone: Optional[str] = None,
+            email: Optional[str] = None,
+            notes: Optional[str] = None,
+            card_number: Optional[str] = None,
+            expiry: Optional[str] = None,
+            cvc: Optional[str] = None,
     ):
         fields = [
             (self.first_name, first_name),
@@ -77,11 +78,20 @@ class CheckoutPage:
         await self.page.click(self.tos_checkbox)
         await expect(self.page.locator(self.tos_checkbox)).to_be_checked()
 
-    async def place_order(self) -> UUID | bool:
+    async def fill_form(self, checkout_data: Dict[str, Any]):
+        discount_code = checkout_data.pop("discount_code", None)
+        check_tos = checkout_data.pop("tos_checkbox", False)
+        await self.fill_billing_details(**checkout_data)
+        if discount_code:
+            await self.apply_discount_code(discount_code)
+        if check_tos:
+            await self.click_tos_checkbox()
+
+    async def place_order(self, timeout=2000) -> UUID | bool:
         await self.page.locator(self.place_order_button).scroll_into_view_if_needed()
 
         try:
-            async with self.page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
+            async with self.page.expect_response(f"{BASE_URL}/api/checkout", timeout=timeout) as response_info:
                 await self.page.click(self.place_order_button)
 
             response = await response_info.value

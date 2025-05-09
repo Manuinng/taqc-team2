@@ -34,11 +34,7 @@ async def test_success_purchase_product(browser):
     await cart.go_to_checkout()
     checkout_page = CheckoutPage(page)
     checkout_data = load_json("checkout_valid_data.json")
-    discount_code = checkout_data.pop("discount_code", None)
-    check_tos = checkout_data.pop("tos_checkbox", False)
-    await checkout_page.fill_billing_details(**checkout_data)
-    if discount_code: await checkout_page.apply_discount_code(discount_code)
-    if check_tos: await checkout_page.click_tos_checkbox()
+    await checkout_page.fill_form(checkout_data)
     order_id = await checkout_page.place_order()
     assert order_id, f"Valid order wasn't placed after 2s"
 

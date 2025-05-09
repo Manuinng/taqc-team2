@@ -32,36 +32,11 @@ async def test_success_purchase_product(browser):
     assert product.get_information_cart, "The product was not found in the cart."
     cart = CartSidebar(page)
     await cart.go_to_checkout()
-    checkout = CheckoutPage(page)
+    checkout_page = CheckoutPage(page)
     checkout_data = load_json("checkout_valid_data.json")
-    await checkout.fill_billing_details(
-        checkout_data["first_name"],
-        checkout_data["last_name"],
-        checkout_data["country"],
-        checkout_data["city"],
-        checkout_data["address"],
-        checkout_data["phone"],
-        checkout_data["email"],
-        checkout_data["notes"]
-    )
-    await checkout.apply_discount_code(checkout_data["discount_code"])
-    await checkout.fill_credit_card_details(
-        checkout_data["card_number"],
-        checkout_data["expiry"],
-        checkout_data["cvc"]
-    )
-    await checkout.click_tos_checkbox()
-    try:
-        async with page.expect_response(f"{BASE_URL}/api/checkout", timeout=2000) as response_info:
-            await checkout.place_order()
-        response = await response_info.value
-
-        assert response.ok, "Failed to place order"
-        response_data = await response.json()
-        assert "orderId" in response_data, "Response does not contain orderId"
-        order_id = response_data.get("orderId")
-    except TimeoutError:
-        raise TimeoutError("Order was not placed after 2s")
+    await checkout_page.fill_form(checkout_data)
+    order_id = await checkout_page.place_order()
+    assert order_id, f"Valid order wasn't placed after 2s"
 
     order_data = APIHelper.get_order(order_id)
     order_api_id = order_data.pop("id", None)

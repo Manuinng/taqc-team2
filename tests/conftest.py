@@ -56,6 +56,11 @@ async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
     return page
 
 @pytest_asyncio.fixture(loop_scope="module")
+async def setup_browser(browser, session: List[Cookie]) -> Tuple[Page]:
+    page = await browser.new_page()
+    return page
+
+@pytest_asyncio.fixture(loop_scope="module")
 async def session() -> List[Cookie]:
     session = requests.Session()
 

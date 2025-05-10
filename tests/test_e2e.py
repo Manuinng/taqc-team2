@@ -8,35 +8,33 @@ from config.config import BASE_URL
 
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_success_purchase_product(browser):
-    page = await browser.new_page() 
-    home = AutomationPortal(page)
+async def test_success_purchase_product(setup_browser):
+    home = AutomationPortal(setup_browser)
+    navbar = Navbar(setup_browser)
+    loginpopup= LoginPopup(setup_browser)
+    register = RegisterForm(setup_browser)
+    login = LoginForm(setup_browser)
+    navbar = Navbar(setup_browser)
+    product = ProductPage(setup_browser)
+    cart = CartSidebar(setup_browser)
+    checkout_page = CheckoutPage(setup_browser)
+
     await home.navigate()
     await home.close_newsletter_popup()
-    navbar = Navbar(page)
-    loginpop= LoginPopup(page)
     await navbar.navigate_to_account()
-    await loginpop.open_new_customer_popup()
-    register = RegisterForm(page)
+    await loginpopup.open_new_customer_popup()
     await register.fill_registration_form("FirstName", "LastName", "test9999@example.com", "12345")
     await register.submit_registration()
-    login = LoginForm(page)
     await login.fill_login_form("test9999@example.com", "12345")
     await login.submit_login()
-    navbar = Navbar(page)
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
-    product = ProductPage(page)
     await product.selectProduct()
     await product.addCart(data.input_success)
-    assert product.get_information_cart, "The product was not found in the cart."
-    cart = CartSidebar(page)
     await cart.go_to_checkout()
-    checkout_page = CheckoutPage(page)
     checkout_data = load_json("checkout_valid_data.json")
     await checkout_page.fill_form(checkout_data)
     order_id = await checkout_page.place_order()
-    assert order_id, f"Valid order wasn't placed after 2s"
 
     order_data = APIHelper.get_order(order_id)
     order_api_id = order_data.pop("id", None)

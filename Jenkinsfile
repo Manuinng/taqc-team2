@@ -11,7 +11,7 @@ pipeline {
 
         stage('env') {
             steps {
-                sh '. workspace/venv/bin/activate'
+                sh '. ../venv/bin/activate'
             }
         }
         

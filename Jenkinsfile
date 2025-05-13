@@ -11,17 +11,24 @@ pipeline {
 
         stage('env') {
             steps {
-                sh '. .workspace/venv/bin/activate'
+                sh '. workspace/venv/bin/activate'
             }
         }
         
-        stage('Instalación dependencias') {
+        stage('dependencies') {
             steps {
                 sh 'pip install --break-system-packages -r requirements.txt'
             }
         }
+
+        stage('Playwright Install') {
+            steps {
+                sh 'playwright install'
+            }
+        }
+
         
-        stage('Pruebas') {
+        stage('Test') {
             steps {
                 sh 'pytest'
             }

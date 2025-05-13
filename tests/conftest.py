@@ -26,7 +26,7 @@ def pytest_configure(config):
 async def browser(request) -> AsyncGenerator[Browser, None]:
     headless_cmd = request.config.getoption("--no-headless")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=headless_cmd)
         yield browser
         await browser.close()
 

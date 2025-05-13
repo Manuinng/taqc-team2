@@ -58,7 +58,7 @@ async def test_success_purchase_product(setup_browser):
         if value != reference:
             errors.append(f"Order {key} mismatch: reference = {reference}, saved = {value}")
 
-    assert not errors, f"Order data mismatch (check complete message for details)\n{'\n'.join(errors)}"
+    assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)
 
     user_id = APIHelper.get_user_id("test9999@example.com")
     assert user_id
@@ -102,4 +102,4 @@ async def test_purchase_product_without_account(setup_browser):
         if value != reference:
             errors.append(f"Order {key} mismatch: reference = {reference}, saved = {value}")
 
-    assert not errors, f"Order data mismatch (check complete message for details){'\n'.join(errors)}"
+    assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)

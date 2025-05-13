@@ -24,6 +24,7 @@ pipeline {
         stage('Playwright Install') {
             steps {
                 sh 'playwright install'
+                sh 'playwright install-deps'
             }
         }
 

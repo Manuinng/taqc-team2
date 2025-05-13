@@ -23,7 +23,7 @@ pipeline {
         
         stage('Pruebas') {
             steps {
-                sh 'pytest tests/test_product.py'
+                sh 'pytest'
             }
         }
     }

@@ -107,4 +107,4 @@ async def test_api_order_placed(setup_checkout: Tuple[CheckoutPage, Dict[str, An
         if value != reference:
             errors.append(f"Order {key} mismatch: reference = {reference}, saved = {value}")
 
-    assert not errors, f"Order data mismatch (check complete message for details)\n{'\n'.join(errors)}"
+    assert not errors, f"Order data mismatch (check complete message for details){'\n'.join(errors)}"

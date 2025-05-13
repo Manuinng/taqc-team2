@@ -11,8 +11,10 @@ COPY . .
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
-    python3-venv 
+    python3-venv
+
+RUN python3 -m venv venv
 
 VOLUME ["/test/report_docker"]
 
-CMD ["sleep", "infinity"]
+CMD ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh"]

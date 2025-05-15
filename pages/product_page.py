@@ -5,7 +5,7 @@ import asyncio
 class ProductPage:
     def __init__(self ,page:Page):
         self.page = page
-        self.productView = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page > div:nth-child(5) > div.card-product-wrapper > a")
+        self.itemProductSelection = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page")
         self.btnColor = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(1) > form > label:nth-child(4) > span.btn-checkbox.bg-color-black")
         self.btnSize = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(2) > form > label:nth-child(6)")
         self.moreQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > span.btn-quantity.plus-btn")
@@ -55,9 +55,9 @@ class ProductPage:
         await self.btnCompare.click()
 
     async def selectProduct(self): #Selection of product
-        await self.productView.click()
+        await self.itemProductSelection.locator("div:nth-child(5) > div.card-product-wrapper > a").click()
 
-    async def addCart(self, input_test:str): #Flow for selection of product options and add to cart 
+    async def addingProduct(self, input_test:str): #Flow for selection of product options and add to cart 
         await self.btnColor.wait_for(state='visible')
         await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
         await self.btnColor.click()
@@ -149,3 +149,14 @@ class ProductPage:
     async def discountPrice(self): #return the discount price selector
         discount_price_text = self.discount_price
         return discount_price_text
+
+    async def addingSecondProduct(self):
+        await self.itemProductSelection.locator("div:nth-child(1) > div.card-product-wrapper > a").click()
+        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
+        await self.btnColor.click()
+        await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
+        await self.btnSize.click()
+        await expect(self.inputQuantity,"The input for quantity is not visible").to_be_visible()
+        await self.inputQuantity.fill("1")
+        await expect(self.btnAdd,"The button for add product is not visible").to_be_visible()
+        await self.btnAdd.click()

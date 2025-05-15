@@ -12,7 +12,7 @@ async def test_success_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_success)
+    await product.addingProduct(data.input_success)
     product_information = await product.get_information_cart()
     await expect(product_information,"The product isn't in the cart.").to_be_visible()
 
@@ -23,7 +23,7 @@ async def test_fail_infinity_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_infinity)
+    await product.addingProduct(data.input_infinity)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when using an infinite quantity.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when using an infinite quantity."
@@ -35,7 +35,7 @@ async def test_fail_NaN_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_Nan)
+    await product.addingProduct(data.input_Nan)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when using a NaN quantity.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when using a NaN quantity."
@@ -47,7 +47,7 @@ async def test_fail_zero_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_zero)
+    await product.addingProduct(data.input_zero)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when using a Zero quantity.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when using a Zero quantity."
@@ -59,7 +59,7 @@ async def test_fail_max_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_max)
+    await product.addingProduct(data.input_max)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product is added even with quantities that should reach the maximum available product.").not_to_be_visible()
     #assert not product.get_information_cart, "The product is added even with quantities that should reach the maximum available product."
@@ -71,7 +71,7 @@ async def test_fail_negative_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_neg)
+    await product.addingProduct(data.input_neg)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when using a negative quantity.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when using a negative quantity."
@@ -95,7 +95,7 @@ async def test_int_value_quantity(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_int)
+    await product.addingProduct(data.input_int)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when using a numeral quantity.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when using a numeral quantity."
@@ -107,7 +107,7 @@ async def test_empty_product(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_empty)
+    await product.addingProduct(data.input_empty)
     product_information = await product.get_information_cart()
     await expect(product_information, "The product should not be in the cart when it is empty.").not_to_be_visible()
     #assert not product.get_information_cart, "The product should not be in the cart when it is empty."
@@ -141,7 +141,7 @@ async def test_compare_product_cart(setup_product):
     await home.close_newsletter_popup()
     product = ProductPage(setup_product)
     await product.selectProduct()
-    await product.addCart(data.input_success)
+    await product.addingProduct(data.input_success)
     get_compare_cart = await product.get_compare_cart()
     await expect(get_compare_cart, "The color of the product in the cart does not match.").not_to_have_text("Light gray")
     #assert product.get_compare_cart == "Light gray", "The color of the product in the cart does not match."

@@ -9,29 +9,26 @@ pipeline {
             }
         }
 
-        stage('env') {
-            steps {
-                sh '. ../venv/bin/activate'
-            }
-        }
-        
         stage('dependencies') {
             steps {
-                sh 'pip install --break-system-packages -r requirements.txt'
+                sh """. ../venv/bin/activate 
+                pip install --break-system-packages -r requirements.txt"""
             }
         }
 
         stage('Playwright Install') {
             steps {
-                sh 'playwright install'
-                sh 'playwright install-deps'
+                sh """. ../venv/bin/activate
+                playwright install
+                playwright install-deps"""
             }
         }
 
         
         stage('Test') {
             steps {
-                sh 'pytest'
+                sh """. ../venv/bin/activate
+                pytest"""
             }
         }
     }

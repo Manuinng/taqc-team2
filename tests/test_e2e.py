@@ -8,16 +8,16 @@ from config.config import BASE_URL
 
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_success_purchase_product(setup_browser):
-    home = AutomationPortal(setup_browser)
-    navbar = Navbar(setup_browser)
-    loginpopup= LoginPopup(setup_browser)
-    register = RegisterForm(setup_browser)
-    login = LoginForm(setup_browser)
-    navbar = Navbar(setup_browser)
-    product = ProductPage(setup_browser)
-    cart = CartSidebar(setup_browser)
-    checkout_page = CheckoutPage(setup_browser)
+async def test_success_purchase_product(setup_e2e):
+    home = AutomationPortal(setup_e2e)
+    navbar = Navbar(setup_e2e)
+    loginpopup= LoginPopup(setup_e2e)
+    register = RegisterForm(setup_e2e)
+    login = LoginForm(setup_e2e)
+    navbar = Navbar(setup_e2e)
+    product = ProductPage(setup_e2e)
+    cart = CartSidebar(setup_e2e)
+    checkout_page = CheckoutPage(setup_e2e)
 
     await home.navigate()
     await home.close_newsletter_popup()
@@ -60,19 +60,15 @@ async def test_success_purchase_product(setup_browser):
 
     assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)
 
-    user_id = APIHelper.get_user_id("test9999@example.com")
-    assert user_id
-    assert APIHelper.delete_user(user_id)
-
 @pytest.mark.asyncio(loop_scope="module")
-async def test_purchase_with_account(setup_browser):
-    home = AutomationPortal(setup_browser)
-    navbar = Navbar(setup_browser)
-    loginpopup= LoginPopup(setup_browser)
-    navbar = Navbar(setup_browser)
-    product = ProductPage(setup_browser)
-    cart = CartSidebar(setup_browser)
-    checkout_page = CheckoutPage(setup_browser)
+async def test_purchase_with_account(setup_page):
+    home = AutomationPortal(setup_page)
+    navbar = Navbar(setup_page)
+    loginpopup= LoginPopup(setup_page)
+    navbar = Navbar(setup_page)
+    product = ProductPage(setup_page)
+    cart = CartSidebar(setup_page)
+    checkout_page = CheckoutPage(setup_page)
 
     await home.navigate()
     await home.close_newsletter_popup()
@@ -113,11 +109,11 @@ async def test_purchase_with_account(setup_browser):
     assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_purchase_product_without_account(setup_browser):
-    home = AutomationPortal(setup_browser)
-    product = ProductPage(setup_browser)
-    cart = CartSidebar(setup_browser)
-    checkout_page = CheckoutPage(setup_browser)
+async def test_purchase_product_without_account(setup_page):
+    home = AutomationPortal(setup_page)
+    product = ProductPage(setup_page)
+    cart = CartSidebar(setup_page)
+    checkout_page = CheckoutPage(setup_page)
 
     await home.navigate()
     await home.close_newsletter_popup()
@@ -153,14 +149,14 @@ async def test_purchase_product_without_account(setup_browser):
     assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_add_two_product_remove_one(setup_browser):
-    home = AutomationPortal(setup_browser)
-    navbar = Navbar(setup_browser)
-    loginpopup= LoginPopup(setup_browser)
-    navbar = Navbar(setup_browser)
-    product = ProductPage(setup_browser)
-    cart = CartSidebar(setup_browser)
-    checkout_page = CheckoutPage(setup_browser)
+async def test_add_two_product_remove_one(setup_page):
+    home = AutomationPortal(setup_page)
+    navbar = Navbar(setup_page)
+    loginpopup= LoginPopup(setup_page)
+    navbar = Navbar(setup_page)
+    product = ProductPage(setup_page)
+    cart = CartSidebar(setup_page)
+    checkout_page = CheckoutPage(setup_page)
 
     await home.navigate()
     await home.close_newsletter_popup()

@@ -56,7 +56,15 @@ async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
     return page
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_browser(browser, session: List[Cookie]) -> Tuple[Page]:
+async def setup_e2e(browser) -> AsyncGenerator[Page, None]:
+    page = await browser.new_page()
+    yield page
+    user_id = APIHelper.get_user_id("test9999@example.com")
+    assert user_id
+    assert APIHelper.delete_user(user_id)
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_page(browser) -> AsyncGenerator[Page, None]:
     page = await browser.new_page()
     return page
 

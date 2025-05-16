@@ -1,16 +1,12 @@
 import pytest
 import pytest_asyncio
 import requests
-from typing import List, AsyncGenerator
-from playwright.async_api import async_playwright, Browser, Cookie
-
-from config.config import BASE_URL, TEST_USER
+from typing import List, Tuple, Dict, Any, AsyncGenerator
+from playwright.async_api import async_playwright, Browser, Page, Cookie
+from config.config import TEST_USER
 from tests.utils.api_helper import APIHelper
-from pages import AutomationPortal, Navbar, LoginPopup
-from pages.automation_portal import AutomationPortal as AutoPortal
-from pages.register_form import RegisterForm
-from pages.login_form import LoginForm
-from pages.components import CartSidebar
+from tests.utils.common_utils import load_json
+from pages import AutomationPortal, Navbar, LoginPopup, CheckoutPage
 
 
 def pytest_addoption(parser):
@@ -21,25 +17,9 @@ def pytest_addoption(parser):
         help="Run tests with GUI instead of headless"
     )
 
-
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
     config.addinivalue_line("markers", "asyncio: marks a test as asynchronous")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def cleanup_user():
-    emails_to_cleanup = ["test9999@example.com", "a@a", "test!@domain.com"]
-    for email in emails_to_cleanup:
-        user_id = APIHelper.get_user_id(email)
-        if user_id:
-            print(f"Existing user found with ID {user_id} for email {email}. Trying to delete...")
-            if APIHelper.delete_user(user_id):
-                print(f"User with ID {user_id} successfully deleted.")
-            else:
-                print(f"Error trying to delete user with ID {user_id}.")
-        else:
-            print(f"No existing user found for the email {email}.")
 
 
 @pytest_asyncio.fixture(loop_scope="module")
@@ -50,51 +30,51 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         yield browser
         await browser.close()
 
+@pytest_asyncio.fixture(loop_scope="module")
+async def cart_valid_data() -> Dict:
+    return load_json("cart_valid_data.json")
 
-@pytest_asyncio.fixture(scope="function")
-async def browser_page(browser):
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_checkout(browser, session: List[Cookie], cart_valid_data: Dict[str, Any]) -> Tuple[CheckoutPage, Dict[str, Any]]:
+    context = await browser.new_context()
+    checkout_valid_data = load_json("checkout_valid_data.json")
+
+    await context.add_cookies(session)
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+
+    page = await context.new_page()
+    checkout_page = CheckoutPage(page)
+    await checkout_page.navigate()
+
+    return checkout_page, checkout_valid_data
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
+    context = await browser.new_context()
+    await context.add_cookies(session)
+    page = await context.new_page()
+    return page
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_e2e(browser) -> AsyncGenerator[Page, None]:
     page = await browser.new_page()
     yield page
-    await page.close()
+    user_id = APIHelper.get_user_id("test9999@example.com")
+    assert user_id
+    assert APIHelper.delete_user(user_id)
 
-
-@pytest_asyncio.fixture(scope="function")
-async def portal_page(browser_page):
-    return {
-        "home": AutoPortal(browser_page),
-        "register": RegisterForm(browser_page),
-        "login": LoginForm(browser_page),
-        "navbar": Navbar(browser_page),
-        "cart_sidebar": CartSidebar(browser_page),
-        "login_popup": LoginPopup(browser_page),
-    }
-
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_page(browser) -> AsyncGenerator[Page, None]:
+    page = await browser.new_page()
+    return page
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def session() -> List[Cookie]:
     session = requests.Session()
 
-    response_csrf = session.get(f"{BASE_URL}/api/auth/csrf")
-    if response_csrf.status_code == 200:
-        csrf_token = response_csrf.json().get('csrfToken')
-    else:
-        raise requests.exceptions.HTTPError(f"Failed to retrieve CSRF token: {response_csrf.status_code}")
-
-    data = {
-        "email": TEST_USER["email"],
-        "password": TEST_USER["password"],
-        "redirect": "false",
-        "csrfToken": csrf_token,
-        "callbackUrl": f"{BASE_URL}/login",
-        "json": "true"
-    }
-    response_login = session.post(f"{BASE_URL}/api/auth/callback/credentials", data=data)
-    if response_login.status_code != 200:
-        raise requests.exceptions.HTTPError(f"Login failed: {response_login.status_code}")
-
-    response_session = session.get(f"{BASE_URL}/api/auth/session")
-    if response_session.status_code != 200:
-        raise requests.exceptions.HTTPError(f"Failed to retrieve session cookie: {response_session.status_code}")
+    csrf_token = APIHelper.get_csrf_token(session)
+    APIHelper.login(session, TEST_USER["email"], TEST_USER["password"], csrf_token)
+    APIHelper.get_auth_session(session)
 
     context_cookies = []
     for cookie in session.cookies:

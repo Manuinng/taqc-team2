@@ -20,6 +20,7 @@ class LoginPopup:
         await self.page.wait_for_selector(self.login_button)
         await self.page.click(self.login_button)
         await self.page.wait_for_url(f"{BASE_URL}/my-account")
+        await self.page.keyboard.press("Escape")
 
     async def close_login_popup(self):
         await self.page.wait_for_selector(self.close_button)

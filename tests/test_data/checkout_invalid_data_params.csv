@@ -1,0 +1,15 @@
+test_field,test_value
+email,.email@example.com
+email,invalid..email@example.com
+email,email@example
+email,email@example.c-m
+email,email@example.c
+phone,not_a_phone_number
+phone,+999999
+phone,+9999999999999999
+card_number,not_a_card_number
+card_number,0000000000000001
+expiry,not_a_date
+expiry,13/26
+expiry,12/24
+cvc,abc

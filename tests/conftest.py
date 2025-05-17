@@ -31,22 +31,42 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         await browser.close()
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def cart_valid_data() -> Dict:
-    return load_json("cart_valid_data.json")
+async def valid_cart_data() -> Dict[str, Any]:
+    return load_json("valid_cart_data.json")
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session: List[Cookie], cart_valid_data: Dict[str, Any]) -> Tuple[CheckoutPage, Dict[str, Any]]:
+async def valid_billing_details() -> Dict[str, str]:
+    return {
+        "first_name": "Test",
+        "last_name": "User",
+        "country": "Spain",
+        "city": "Madrid",
+        "address": "Calle Falsa 123, 28080 Madrid, Spain",
+        "phone": "+34 612 345 678",
+        "email": "email@example.com",
+        "notes": "This is a test note"
+    }
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def valid_credit_card_info() -> Dict[str, str]:
+    return {
+        "card_number": "4242424242424242",
+        "expiry": "12/26",
+        "cvc": "123"
+    }
+
+@pytest_asyncio.fixture(loop_scope="module")
+async def setup_checkout(browser, session: List[Cookie], valid_cart_data: Dict[str, Any]) -> CheckoutPage:
     context = await browser.new_context()
-    checkout_valid_data = load_json("checkout_valid_data.json")
 
     await context.add_cookies(session)
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({valid_cart_data}))")
 
     page = await context.new_page()
     checkout_page = CheckoutPage(page)
     await checkout_page.navigate()
 
-    return checkout_page, checkout_valid_data
+    return checkout_page
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:

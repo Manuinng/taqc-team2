@@ -1,17 +1,22 @@
 import pytest
-from pytest_csv_params.decorator import csv_params
 from pages import CheckoutPage
 from playwright.async_api import expect, Cookie
-from tests.utils.api_helper import APIHelper
-from tests.utils.common_utils import camel_to_snake
-from typing import Tuple, Dict, List, Any
+from typing import Dict, List, Any
 
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_valid_data(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]]):
-    checkout_page, checkout_data = setup_checkout
-    await checkout_page.fill_form(checkout_data)
-    order_id = await checkout_page.place_order()
-    assert order_id, f"Order was not placed with valid data"
+async def test_form_valid_data(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str]
+):
+    checkout_page = setup_checkout
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).to_contain_text(expected="Order saved successfully!", timeout=2000)
 
 @pytest.mark.parametrize("empty_field", [
     "first_name",
@@ -20,91 +25,182 @@ async def test_form_valid_data(setup_checkout: Tuple[CheckoutPage, Dict[str, Any
     "city",
     "address",
     "phone",
-    "email",
-    "card_number",
-    "expiry",
-    "cvc",
+    "email"
 ])
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_empty_fields(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]], empty_field:str):
-    checkout_page, checkout_data = setup_checkout
-    checkout_data.pop(empty_field, None)
-    await checkout_page.fill_form(checkout_data)
-    order_id = await checkout_page.place_order()
-    assert not order_id, f"Order {order_id} was placed with empty {empty_field}"
+async def test_form_empty_billing_details_fields(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str],
+    empty_field: str
+):
+    checkout_page = setup_checkout
+    invalid_billing_details = valid_billing_details
+    invalid_billing_details.pop(empty_field, None)
+
+    await checkout_page.fill_billing_details(**invalid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).not_to_be_visible(timeout=2000)
+
+@pytest.mark.parametrize("empty_field", [
+    "card_number",
+    "expiry",
+    "cvc"
+])
+@pytest.mark.asyncio(loop_scope = "module")
+async def test_form_empty_credit_card_fields(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str],
+    empty_field: str
+):
+    checkout_page = setup_checkout
+    invalid_credit_card_info = valid_credit_card_info
+    invalid_credit_card_info.pop(empty_field, None)
+
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**invalid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).not_to_be_visible(timeout=2000)
 
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_unchecked_tos(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]]):
-    checkout_page, checkout_data = setup_checkout
-    checkout_data.pop("tos_checkbox", None)
-    await checkout_page.fill_form(checkout_data)
-    order_id = await checkout_page.place_order()
-    assert not order_id, f"Order {order_id} was placed with unchecked ToS"
+async def test_form_unchecked_tos(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str]
+):
+    checkout_page = setup_checkout
+
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).not_to_be_visible(timeout=2000)
 
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_optional_discount_code(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]]):
-    checkout_page, checkout_data = setup_checkout
-    checkout_data.pop("discount_code", None)
-    await checkout_page.fill_form(checkout_data)
-    order_id = await checkout_page.place_order()
-    assert order_id, f"Order was not placed with empty discount code"
+async def test_form_optional_discount_code(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str]
+):
+    checkout_page = setup_checkout
 
-@csv_params(data_file="./tests/test_data/checkout_invalid_data_params.csv")
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).to_contain_text(expected="Order saved successfully!", timeout=2000)
+
+@pytest.mark.parametrize("test_field, test_value", [
+    ("email", ".email@example.com"),
+    ("email", "invalid..email@example.com"),
+    ("email", "email@example"),
+    ("email", "email@example.c-m"),
+    ("email", "email@example.c"),
+    ("phone", "not_a_phone_number"),
+    ("phone", "+999999"),
+    ("phone", "+9999999999999999")
+])
 @pytest.mark.asyncio(loop_scope = "module")
-async def test_form_invalid_data(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]], test_field: str, test_value: str):
-    checkout_page, checkout_data = setup_checkout
-    checkout_data[test_field] = test_value
-    await checkout_page.fill_form(checkout_data)
-    order_id = await checkout_page.place_order()
-    assert not order_id, f"Order {order_id} was placed with {test_value} in {test_field} field"
+async def test_form_invalid_billing_details(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str],
+    test_field: str,
+    test_value: str
+):
+    checkout_page = setup_checkout
+    invalid_billing_details = valid_billing_details
+    invalid_billing_details[test_field] = test_value
+
+    await checkout_page.fill_billing_details(**invalid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).not_to_contain_text(expected="Order saved successfully!", timeout=2000)
+
+@pytest.mark.parametrize("test_field, test_value", [
+    ("card_number", "not_a_card_number"),
+    ("card_number", "0000000000000001"),
+    ("expiry", "not_a_date"),
+    ("expiry", "13/26"),
+    ("expiry", "12/24"),
+    ("cvc", "abc")
+])
+@pytest.mark.asyncio(loop_scope = "module")
+async def test_form_invalid_credit_card_info(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str],
+    test_field: str,
+    test_value: str
+):
+    checkout_page = setup_checkout
+    invalid_credit_card_info = valid_credit_card_info
+    invalid_credit_card_info[test_field] = test_value
+
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**invalid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+
+    await expect(checkout_page.order_message).not_to_contain_text(expected="Order saved successfully!", timeout=2000)
 
 @pytest.mark.parametrize("test_case", [
     "not logged in",
     "cart is empty",
 ])
 @pytest.mark.asyncio(loop_scope="module")
-async def test_access(browser, session: List[Cookie], cart_valid_data: Dict[str, Any], test_case: str):
+async def test_access(
+    browser,
+    session: List[Cookie],
+    valid_cart_data: Dict[str, Any],
+    test_case: str
+):
     context = await browser.new_context()
 
     if test_case != "not logged in":
         await context.add_cookies(session)
     if test_case != "cart is empty":
-        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+        await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({valid_cart_data}))")
 
     page = await context.new_page()
     checkout_page = CheckoutPage(page)
-    await checkout_page.navigate()
+    await page.goto(checkout_page.url)
+
     await expect(page, f"should not allow the user to access checkout if {test_case}").not_to_have_url(checkout_page.url, timeout=2000)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_api_order_placed(setup_checkout: Tuple[CheckoutPage, Dict[str, Any]]):
-    checkout_page, checkout_data = setup_checkout
-    await checkout_page.fill_form(checkout_data)
+async def test_api_order_placed(
+    setup_checkout: CheckoutPage,
+    valid_billing_details: Dict[str, str],
+    valid_credit_card_info: Dict[str, str],
+    valid_cart_data: Dict[str, Any]
+):
+    checkout_page = setup_checkout
+
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    assert order_id, f"Valid order wasn't placed after 2s"
+    assert order_id, f"API response timed out (2s)"
+    errors = await checkout_page.validate_api_order(
+        order_id,
+        valid_billing_details | valid_credit_card_info,
+        valid_cart_data[0]
+    )
 
-    order_data = APIHelper.get_order(order_id)
-    assert "id" in order_data, "API response is missing 'id' field"
-    order_api_id = order_data.pop("id")
-    order_data.pop("createdAt", None)
-    assert "items" in order_data, "API response is missing 'items' field"
-    cart_data = order_data.pop("items", [])
-
-    errors = []
-    for product in cart_data:
-        product.pop("id", None)
-        for key, value in product.items():
-            if key == "orderId":
-                reference = order_api_id
-            else:
-                reference = product.get(key, None)
-            if value != reference:
-                errors.append(f"Product {key} mismatch: reference = {reference}, saved = {value}")
-
-    for key, value in order_data.items():
-        key = camel_to_snake(key)
-        reference = checkout_data.get(key, None)
-        if value != reference:
-            errors.append(f"Order {key} mismatch: reference = {reference}, saved = {value}")
-
-    assert not errors, "Order data mismatch (check complete message for details)\n" + '\n'.join(errors)
+    assert not errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(errors)

@@ -31,7 +31,7 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         await browser.close()
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def valid_cart_data() -> Dict[str, Any]:
+async def valid_cart_data() -> List[Dict[str, Any]]:
     return load_json("valid_cart_data.json")
 
 @pytest_asyncio.fixture(loop_scope="module")
@@ -56,7 +56,7 @@ async def valid_credit_card_info() -> Dict[str, str]:
     }
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session: List[Cookie], valid_cart_data: Dict[str, Any]) -> CheckoutPage:
+async def setup_checkout(browser, session: List[Cookie], valid_cart_data: List[Dict[str, Any]]) -> CheckoutPage:
     context = await browser.new_context()
 
     await context.add_cookies(session)

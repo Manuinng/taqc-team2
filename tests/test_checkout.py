@@ -166,7 +166,7 @@ async def test_form_invalid_credit_card_info(
 async def test_access(
     browser,
     session: List[Cookie],
-    valid_cart_data: Dict[str, Any],
+    valid_cart_data: List[Dict[str, Any]],
     test_case: str
 ):
     context = await browser.new_context()
@@ -187,7 +187,7 @@ async def test_api_order_placed(
     setup_checkout: CheckoutPage,
     valid_billing_details: Dict[str, str],
     valid_credit_card_info: Dict[str, str],
-    valid_cart_data: Dict[str, Any]
+    valid_cart_data: List[Dict[str, Any]]
 ):
     checkout_page = setup_checkout
 

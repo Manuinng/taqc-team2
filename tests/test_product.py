@@ -1,9 +1,9 @@
 import pytest
 import asyncio
-import re
 from playwright.async_api import expect
 from tests.test_data.quantity_data import data
 from pages import ProductPage, AutomationPortal
+from config.config import BASE_URL
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_success_product(setup_product):
@@ -120,7 +120,7 @@ async def test_buy_with(setup_product):
     product = ProductPage(setup_product)
     await product.selectProduct()
     await product.buyOption()
-    await expect(product.page, "The page has not been redirected to checkout.").to_have_url(re.compile(r".*/checkout"))
+    await expect(product.page, "The page has not been redirected to checkout.").to_have_url(f"{BASE_URL}/checkout")
     #assert "/checkout" in product.page.url, "The page has not been redirected to checkout."
 
 @pytest.mark.asyncio(loop_scope="module")
@@ -131,7 +131,7 @@ async def test_categories_button(setup_product):
     product = ProductPage(setup_product)
     await product.selectProduct()
     await product.categoryOption()
-    await expect(product.page, "The page was not redirected to categories.").to_have_url(re.compile(r".*/shop-default"))
+    await expect(product.page, "The page was not redirected to categories.").to_have_url(f"{BASE_URL}/shop-default")
     #assert "/shop-default" in product.page.url, "The page was not redirected to categories."
 
 @pytest.mark.asyncio(loop_scope="module")

@@ -6,6 +6,8 @@
 - [Test Case 2: Place an order with an user that have account](#test-case-2-place-an-order-with-an-user-that-have-account)
 - [Test Case 3: Place an order with an user that isn't Login](#test-case-3-place-an-order-with-an-user-that-isnt-login)
 - [Test Case 4: Select different product but eliminate one in the last check](#test-case-4-select-different-product-but-eliminate-one-in-the-last-check)
+- [Test Case 5: Add two products in separate instance](#test-case-5-add-two-products-in-separate-instance)
+- [Test Case 6: Customer input invalid information for the card details](#test-case-6-customer-input-invalid-information-for-the-card-details)
 
 ### Test Case 1: Success Order PLace with registration in the website
 

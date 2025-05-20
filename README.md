@@ -50,6 +50,10 @@ The project's folder structure is as follows:
 
 * `planning`: Include all the testing planning for the different pages, with their verification and data used.
 
+* `dockerfile`: This file defines the environment for our CI/CD, which includes Jenkins and Python.
+
+* `jenkinsfile`: This file defines the pipeline for the automated testing every time a code change is pushed to the repository.
+
 ## Technologies
 
 Our testing framework is built on [Playwright](https://playwright.dev/python/), [pytest](https://docs.pytest.org/en/stable/), and [Python](https://www.python.org), with [Page Object Models (POMs)](https://playwright.dev/python/docs/pom) as a core organizational principle:
@@ -61,6 +65,10 @@ Our testing framework is built on [Playwright](https://playwright.dev/python/), 
 * [POMs](https://playwright.dev/python/docs/pom): Each page in our e-commerce site has a corresponding POM class, encapsulating its elements and actions. This makes our test scripts cleaner and easier to maintain, as we reuse page interactions across multiple tests.
 
 * [pytest](https://docs.pytest.org/en/stable/): Our test runner, which organizes and executes our test cases, supporting features like parameterization to test multiple scenarios efficiently.
+
+* [Docker](https://www.docker.com): Virtualization platform that enables developers to build, deploy, and manage applications in containers, which are lightweight, portable environments that run consistently across different systems.
+
+* [Jenkins](https://www.jenkins.io): Automation server used for CI/CD. It helps automate building, testing, and deploying applications. When the website’s code changes, it automatically executes our test suite.
 
 ![Static Badge](https://img.shields.io/badge/3.13.2-yellow?style=for-the-badge&logo=python&label=Python) ![Playwright](https://img.shields.io/badge/1.51.0-%232EAD33?style=for-the-badge&logo=playwright&label=Playwright&logoColor=white&color=orange) ![Static Badge](https://img.shields.io/badge/8.3.5-blue?style=for-the-badge&logo=pytest&label=Pytest)
 

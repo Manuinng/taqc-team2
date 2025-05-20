@@ -38,6 +38,8 @@ The project's folder structure is as follows:
 │   │   └── (Files with JSON, CSV and data)
 │   └── utils
 │       └── (shared utilities for the test)
+├── Dockerfile
+├── Jenkinsfile
 ```
 
 * `pages`: Contains the Page Object Models (POMs) for the website's pages and components. These POMs encapsulate page-specific interactions, making our tests modular and maintainable.
@@ -50,6 +52,10 @@ The project's folder structure is as follows:
 
 * `planning`: Include all the testing planning for the different pages, with their verification and data used.
 
+* `dockerfile`: This file defines the environment for our CI/CD, which includes Jenkins and Python.
+
+* `jenkinsfile`: This file defines the pipeline for the automated testing every time a code change is pushed to the repository.
+
 ## Technologies
 
 Our testing framework is built on [Playwright](https://playwright.dev/python/), [pytest](https://docs.pytest.org/en/stable/), and [Python](https://www.python.org), with [Page Object Models (POMs)](https://playwright.dev/python/docs/pom) as a core organizational principle:
@@ -61,6 +67,10 @@ Our testing framework is built on [Playwright](https://playwright.dev/python/), 
 * [POMs](https://playwright.dev/python/docs/pom): Each page in our e-commerce site has a corresponding POM class, encapsulating its elements and actions. This makes our test scripts cleaner and easier to maintain, as we reuse page interactions across multiple tests.
 
 * [pytest](https://docs.pytest.org/en/stable/): Our test runner, which organizes and executes our test cases, supporting features like parameterization to test multiple scenarios efficiently.
+
+* [Docker](https://www.docker.com): Virtualization platform that enables developers to build, deploy, and manage applications in containers, which are lightweight, portable environments that run consistently across different systems.
+
+* [Jenkins](https://www.jenkins.io): Automation server used for CI/CD. It helps automate building, testing, and deploying applications. When the website’s code changes, it automatically executes our test suite.
 
 ![Static Badge](https://img.shields.io/badge/3.13.2-yellow?style=for-the-badge&logo=python&label=Python) ![Playwright](https://img.shields.io/badge/1.51.0-%232EAD33?style=for-the-badge&logo=playwright&label=Playwright&logoColor=white&color=orange) ![Static Badge](https://img.shields.io/badge/8.3.5-blue?style=for-the-badge&logo=pytest&label=Pytest)
 
@@ -114,3 +124,29 @@ pytest --junit-xml=example_report.xml
 ```
 
 For more options, check [pytest's usage documentation](https://docs.pytest.org/en/stable/how-to/usage.html) (or invoke pytest with the `--help` option)
+
+## CI/CD
+
+For a close setup with the enviroment use, the project have 2 different files that are made for the opportunite of use a CI/CD system, where this test can setup the change more clear, safe and can be done more effective. With this explain the 2 programs use for this are Docker and Jenkins.
+
+For the docker side, we have a file that have an image for the enviroment, where is the jenkins and some installation for the use of this with the integration of the code, in this case the file in concrete is the Dockerfile, with this file the build with the necessary installation is more simple and quick.
+
+The way to use is:
+
+```bash
+# generate the image with Jenkins and Python
+docker build -t jenkins/taqc .
+```
+
+When the image is generate is needed to create the container for the running of jenkins, whit the follow commands:
+
+```bash
+# generate the container with the image created
+docker run -p 8080:8080 jenkins/taqc
+```
+
+With the container ganerate, you will have the step to run jenkins already.
+
+Now in the Jenkins already running, is needed to link the repository with the Jenkins, in this case when is created a Job, the configuration have the option to link the repository to this Job, in this same configuration, is needed to point to the Jenkinsfile, in this case the Jenkinsfile have all the commands or necessity's to run the test.
+
+With this already setup, like is clare in the Jenkinsfile, the test are run with a creation of an .XML file that have all the results done with the test, fo the use of this file is needed to have the Junit plugins in jenkins, this one can find in the configuration of the jenkins. When is installed you can see more clear the results of the file.

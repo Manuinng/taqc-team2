@@ -106,3 +106,53 @@ Verify the flow for a customer that have not decide clearly what buy
 
 #### Expected Result
 The order is created and validate for the account
+
+### Test Case 5: Add two products in separate instance
+
+#### Objective
+Verify when a customer try to buy a product but in the middle of the checkout want to add another product too
+
+#### Preconditions
+- User is on Home Page
+- User is Login
+
+#### Test Steps
+1. Select a product
+2. Select the options for the product
+3. Click in add to the cart option
+4. Go to the checkout
+5. Fill the form for the user information
+6. Fill the card form
+7. Go to te home page
+8. Select the second product
+9. Select the options for the second product
+10. Go to the checkout
+11. Fill the form for the user information
+12. Fill the card form
+13. Place the order
+
+#### Expected Result
+The order is created and validate the products
+
+### Test Case 6: Customer input invalid information for the card details
+
+#### Objective
+Verify when a customer put wrong information in the card details
+
+#### Preconditions
+- User is on Home Page
+- User is Login
+
+#### Test Steps
+1. Select a product
+2. Select the options for the product
+3. Click in add to the cart option
+4. Go to the checkout
+5. Fill the form for the user information
+6. Fill the card form with wrong details
+7. Place the order
+8. Fill the card form with the right details
+9. Place the order
+
+#### Expected Result
+The order is created and validate the card information

@@ -127,3 +127,63 @@ async def test_add_two_product_remove_one(setup_page, valid_billing_details, val
         valid_billing_details | valid_credit_card_info
     )
     assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_add_two_products_separate_instances(setup_session, valid_billing_details, valid_credit_card_info):
+    home = AutomationPortal(setup_session)
+    navbar = Navbar(setup_session)
+    navbar = Navbar(setup_session)
+    product = ProductPage(setup_session)
+    cart = CartSidebar(setup_session)
+    checkout_page = CheckoutPage(setup_session)
+
+    await home.navigate()
+    await home.close_newsletter_popup()
+    await product.selectProduct()
+    await product.addingProduct(data.input_success)
+    await cart.go_to_checkout()
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    await navbar.navigate_to_home()
+    await home.close_newsletter_popup()
+    await product.addingSecondProduct()
+    await cart.go_to_checkout()
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    await checkout_page.click_tos_checkbox()
+    order_id = await checkout_page.place_order()
+    api_errors = await checkout_page.validate_api_order(
+        order_id,
+        valid_billing_details | valid_credit_card_info
+    )
+    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+
+@pytest.mark.asyncio(loop_scope="module")
+async def test_wrong_card_information(setup_session, valid_billing_details, valid_credit_card_info):
+    home = AutomationPortal(setup_session)
+    navbar = Navbar(setup_session)
+    navbar = Navbar(setup_session)
+    product = ProductPage(setup_session)
+    cart = CartSidebar(setup_session)
+    checkout_page = CheckoutPage(setup_session)
+
+    await home.navigate()
+    await home.close_newsletter_popup()
+    await product.selectProduct()
+    await product.addingProduct(data.input_success)
+    await cart.go_to_checkout()
+    await checkout_page.fill_billing_details(**valid_billing_details)
+    await checkout_page.apply_discount_code("TESTDISCOUNT")
+    await checkout_page.fill_credit_card_info(card_number="1234567890123456", expiry="12/26", cvc="123")
+    await checkout_page.click_tos_checkbox()
+    await checkout_page.place_order()
+    await checkout_page.fill_credit_card_info(**valid_credit_card_info)
+    order_id = await checkout_page.place_order()
+    api_errors = await checkout_page.validate_api_order(
+        order_id,
+        valid_billing_details | valid_credit_card_info
+    )
+    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)

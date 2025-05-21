@@ -24,6 +24,10 @@ class CheckoutPage:
         self.cvc = page.locator("input[placeholder='CVC']")
         self.tos_checkbox = page.locator("#check-agree")
         self.place_order_button = page.locator("button.tf-btn.btn-fill.btn-icon.animate-hover-btn:has-text('Place order')")
+        self.cart_items = page.locator("#wrapper > section > div > div > div.tf-page-cart-footer > div > form > ul > li")
+        self.cart_item_quantities = page.locator("#wrapper > section > div > div > div.tf-page-cart-footer > div > form > ul > li > figure > span.quantity")
+        self.cart_item_titles = page.locator("#wrapper > section > div > div > div.tf-page-cart-footer > div > form > ul > li > div > div > p.name")
+        self.cart_item_variants = page.locator("#wrapper > section > div > div > div.tf-page-cart-footer > div > form > ul > li > div > div > span.variant")
         self.order_message = page.locator("#order-message > p")
 
     async def __fill_input(self, locator: str, value: str):

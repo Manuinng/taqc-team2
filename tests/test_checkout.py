@@ -4,6 +4,30 @@ from playwright.async_api import expect, Cookie
 from typing import Dict, List, Any
 
 @pytest.mark.asyncio(loop_scope = "module")
+async def test_cart_items_count(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
+    checkout_page = setup_checkout
+    cart_items_count = len(valid_cart_data)
+    await expect(checkout_page.cart_items).to_have_count(cart_items_count)
+
+@pytest.mark.asyncio(loop_scope = "module")
+async def test_first_product_title(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
+    checkout_page = setup_checkout
+    product_title = valid_cart_data[0].get("title", None)
+    await expect(checkout_page.cart_item_titles.first).to_have_text(product_title)
+
+@pytest.mark.asyncio(loop_scope = "module")
+async def test_first_product_quantity(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
+    checkout_page = setup_checkout
+    product_quantity = str(valid_cart_data[0].get("quantity", None))
+    await expect(checkout_page.cart_item_quantities.first).to_have_text(product_quantity)
+
+@pytest.mark.asyncio(loop_scope = "module")
+async def test_first_product_variant(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
+    checkout_page = setup_checkout
+    product_variant = valid_cart_data[0].get("variant", None)
+    await expect(checkout_page.cart_item_variants.first).to_have_text(product_variant)
+
+@pytest.mark.asyncio(loop_scope = "module")
 async def test_form_valid_data(
     setup_checkout: CheckoutPage,
     valid_billing_details: Dict[str, str],

@@ -24,8 +24,8 @@ async def test_first_product_quantity(setup_checkout: CheckoutPage, valid_cart_d
 @pytest.mark.asyncio(loop_scope = "module")
 async def test_first_product_variant(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
     checkout_page = setup_checkout
-    product_quantity = str(valid_cart_data[0].get("variant", None))
-    await expect(checkout_page.cart_item_variants.first).to_have_text(product_quantity)
+    product_variant = valid_cart_data[0].get("variant", None)
+    await expect(checkout_page.cart_item_variants.first).to_have_text(product_variant)
 
 @pytest.mark.asyncio(loop_scope = "module")
 async def test_form_valid_data(

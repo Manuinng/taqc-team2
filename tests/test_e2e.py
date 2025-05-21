@@ -1,6 +1,7 @@
 import pytest
 from pages import AutomationPortal, LoginPopup, CheckoutPage, ProductPage, RegisterForm, Navbar, CartSidebar, LoginForm
 from tests.test_data.quantity_data import data
+from tests.utils.api_helper import APIHelper
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_success_purchase_product(setup_e2e, valid_billing_details, valid_credit_card_info):
@@ -32,11 +33,7 @@ async def test_success_purchase_product(setup_e2e, valid_billing_details, valid_
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_purchase_with_account(setup_page, valid_billing_details, valid_credit_card_info):
@@ -63,11 +60,7 @@ async def test_purchase_with_account(setup_page, valid_billing_details, valid_cr
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_purchase_product_without_account(setup_page, valid_billing_details, valid_credit_card_info):
@@ -86,11 +79,7 @@ async def test_purchase_product_without_account(setup_page, valid_billing_detail
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_add_two_product_remove_one(setup_page, valid_billing_details, valid_credit_card_info):
@@ -122,11 +111,7 @@ async def test_add_two_product_remove_one(setup_page, valid_billing_details, val
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_add_two_products_separate_instances(setup_session, valid_billing_details, valid_credit_card_info):
@@ -155,17 +140,11 @@ async def test_add_two_products_separate_instances(setup_session, valid_billing_
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
 async def test_wrong_card_information(setup_session, valid_billing_details, valid_credit_card_info):
     home = AutomationPortal(setup_session)
-    navbar = Navbar(setup_session)
-    navbar = Navbar(setup_session)
     product = ProductPage(setup_session)
     cart = CartSidebar(setup_session)
     checkout_page = CheckoutPage(setup_session)
@@ -182,8 +161,4 @@ async def test_wrong_card_information(setup_session, valid_billing_details, vali
     await checkout_page.place_order()
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
     order_id = await checkout_page.place_order()
-    api_errors = await checkout_page.validate_api_order(
-        order_id,
-        valid_billing_details | valid_credit_card_info
-    )
-    assert not api_errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(api_errors)
+    APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)

@@ -118,38 +118,3 @@ class CheckoutPage:
             pass
 
         return False
-
-    async def validate_api_order(self, order_id: UUID, reference_form_data: Dict[str, str], reference_product: Optional[Dict[str, str]] = None) -> List[str]:
-        api_order_data = APIHelper.get_order(order_id)
-        assert "id" in api_order_data, "API response is missing 'id' field"
-        assert "items" in api_order_data, "API response is missing 'items' field"
-        api_order_data.pop("createdAt", None)
-        api_order_id = api_order_data.pop("id")
-        api_cart_data = api_order_data.pop("items", [])
-
-        errors = []
-
-        for key, value in api_order_data.items():
-            key = camel_to_snake(key)
-            reference = reference_form_data.get(key, None)
-            if value != reference:
-                errors.append(f"Order {key} mismatch: reference = {reference}, API = {value}")
-
-        if reference_product:
-            reference_product_keys = ["title", "price", "quantity"]
-            reference_product_data = {
-                key: reference_product[key]
-                for key in reference_product_keys
-                if key in reference_product
-            }
-            product = api_cart_data[0]
-            product.pop("id", None)
-            for key, value in product.items():
-                if key == "orderId":
-                    reference = api_order_id
-                else:
-                    reference = reference_product_data.get(key, None)
-                if value != reference:
-                    errors.append(f"Product {key} mismatch: reference = {reference}, API = {value}")
-
-        return errors

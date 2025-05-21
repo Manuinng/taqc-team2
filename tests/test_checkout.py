@@ -2,6 +2,7 @@ import pytest
 from pages import CheckoutPage
 from playwright.async_api import expect, Cookie
 from typing import Dict, List, Any
+from tests.utils.api_helper import APIHelper
 
 @pytest.mark.asyncio(loop_scope = "module")
 async def test_cart_items_count(setup_checkout: CheckoutPage, valid_cart_data: List[Dict[str, Any]]):
@@ -221,10 +222,8 @@ async def test_api_order_placed(
     await checkout_page.click_tos_checkbox()
     order_id = await checkout_page.place_order()
     assert order_id, f"API response timed out (2s)"
-    errors = await checkout_page.validate_api_order(
+    APIHelper.validate_order(
         order_id,
         valid_billing_details | valid_credit_card_info,
         valid_cart_data[0]
     )
-
-    assert not errors, "API order data mismatch (check complete message for details)\n" + '\n'.join(errors)

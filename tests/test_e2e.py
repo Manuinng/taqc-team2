@@ -18,6 +18,7 @@ async def test_purchase_success(setup_e2e):
     checkout_page = CheckoutPage(setup_e2e)
     valid_billing_details = load_json("valid_billing_details.json")
     valid_credit_card_info = load_json("valid_credit_card_info.json")
+    valid_billing_details["email"] = "temp_" + valid_billing_details["email"]
 
     await home.navigate()
     await home.close_newsletter_popup()
@@ -27,10 +28,10 @@ async def test_purchase_success(setup_e2e):
         valid_billing_details["first_name"],
         valid_billing_details["last_name"],
         valid_billing_details["email"],
-        "Pass123!@#"
+        "Team2!@#"
     )
     await register.submit_registration()
-    await login.fill_login_form(valid_billing_details["email"], "Pass123!@#")
+    await login.fill_login_form(valid_billing_details["email"], "Team2!@#")
     await login.submit_login()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
@@ -57,16 +58,11 @@ async def test_purchase_with_account(setup_page):
     checkout_page = CheckoutPage(setup_page)
     valid_billing_details = load_json("valid_billing_details.json")
     valid_credit_card_info = load_json("valid_credit_card_info.json")
-    valid_billing_details.update({
-        "first_name": "team2",
-        "last_name": "team2",
-        "email": "team2@taqc.com",
-    })
 
     await home.navigate()
     await home.close_newsletter_popup()
     await navbar.navigate_to_account()
-    await loginpopup.fill_login_form(valid_billing_details["email"], "team2")
+    await loginpopup.fill_login_popup(valid_billing_details["email"], "Team2!@#")
     await loginpopup.submit_login_popup()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
@@ -116,16 +112,11 @@ async def test_add_two_products_remove_one(setup_page):
     checkout_page = CheckoutPage(setup_page)
     valid_billing_details = load_json("valid_billing_details.json")
     valid_credit_card_info = load_json("valid_credit_card_info.json")
-    valid_billing_details.update({
-        "first_name": "team2",
-        "last_name": "team2",
-        "email": "team2@taqc.com",
-    })
 
     await home.navigate()
     await home.close_newsletter_popup()
     await navbar.navigate_to_account()
-    await loginpopup.fill_login_popup(valid_billing_details["email"], "team2")
+    await loginpopup.fill_login_popup(valid_billing_details["email"], "Team2!@#")
     await loginpopup.submit_login_popup()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
@@ -137,8 +128,8 @@ async def test_add_two_products_remove_one(setup_page):
     await product.addingSecondProduct()
     await cart.remove_product_from_cart()
     await cart.go_to_checkout()
-    await expect(checkout_page.cart_items).to_have_count(2)
-    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("Franklin Signature Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -182,7 +173,7 @@ async def test_add_two_products_separate_instances(setup_session):
     APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_wrong_card_information(setup_session, valid_billing_details, valid_credit_card_info):
+async def test_wrong_card_information(setup_session):
     home = AutomationPortal(setup_session)
     product = ProductPage(setup_session)
     cart = CartSidebar(setup_session)

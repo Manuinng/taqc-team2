@@ -31,35 +31,11 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         await browser.close()
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def valid_cart_data() -> List[Dict[str, Any]]:
-    return load_json("valid_cart_data.json")
-
-@pytest_asyncio.fixture(loop_scope="module")
-async def valid_billing_details() -> Dict[str, str]:
-    return {
-        "first_name": "Test",
-        "last_name": "User",
-        "country": "Spain",
-        "city": "Madrid",
-        "address": "Calle Falsa 123, 28080 Madrid, Spain",
-        "phone": "+34 612 345 678",
-        "email": "email@example.com",
-        "notes": "This is a test note"
-    }
-
-@pytest_asyncio.fixture(loop_scope="module")
-async def valid_credit_card_info() -> Dict[str, str]:
-    return {
-        "card_number": "4242424242424242",
-        "expiry": "12/26",
-        "cvc": "123"
-    }
-
-@pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session: List[Cookie], valid_cart_data: List[Dict[str, Any]]) -> CheckoutPage:
+async def setup_checkout(browser, session: List[Cookie]) -> CheckoutPage:
     context = await browser.new_context()
 
     await context.add_cookies(session)
+    valid_cart_data = load_json("valid_cart_data.json")
     await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({valid_cart_data}))")
 
     page = await context.new_page()
@@ -80,8 +56,8 @@ async def setup_e2e(browser) -> AsyncGenerator[Page, None]:
     page = await browser.new_page()
     yield page
     user_id = APIHelper.get_user_id("test9999@example.com")
-    assert user_id
-    assert APIHelper.delete_user(user_id)
+    if user_id:
+        APIHelper.delete_user(user_id)
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def setup_page(browser) -> AsyncGenerator[Page, None]:

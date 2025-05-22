@@ -1,10 +1,12 @@
 import pytest
+from playwright.async_api import expect
 from pages import AutomationPortal, LoginPopup, CheckoutPage, ProductPage, RegisterForm, Navbar, CartSidebar, LoginForm
 from tests.test_data.quantity_data import data
 from tests.utils.api_helper import APIHelper
+from tests.utils.common_utils import load_json
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_success_purchase_product(setup_e2e, valid_billing_details, valid_credit_card_info):
+async def test_purchase_success(setup_e2e):
     home = AutomationPortal(setup_e2e)
     navbar = Navbar(setup_e2e)
     loginpopup= LoginPopup(setup_e2e)
@@ -14,20 +16,29 @@ async def test_success_purchase_product(setup_e2e, valid_billing_details, valid_
     product = ProductPage(setup_e2e)
     cart = CartSidebar(setup_e2e)
     checkout_page = CheckoutPage(setup_e2e)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
 
     await home.navigate()
     await home.close_newsletter_popup()
     await navbar.navigate_to_account()
     await loginpopup.open_new_customer_popup()
-    await register.fill_registration_form("FirstName", "LastName", "test9999@example.com", "12345")
+    await register.fill_registration_form(
+        valid_billing_details["first_name"],
+        valid_billing_details["last_name"],
+        valid_billing_details["email"],
+        "Pass123!@#"
+    )
     await register.submit_registration()
-    await login.fill_login_form("test9999@example.com", "12345")
+    await login.fill_login_form(valid_billing_details["email"], "Pass123!@#")
     await login.submit_login()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
     await product.selectProduct()
     await product.addingProduct(data.input_success)
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -36,7 +47,7 @@ async def test_success_purchase_product(setup_e2e, valid_billing_details, valid_
     APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_purchase_with_account(setup_page, valid_billing_details, valid_credit_card_info):
+async def test_purchase_with_account(setup_page):
     home = AutomationPortal(setup_page)
     navbar = Navbar(setup_page)
     loginpopup= LoginPopup(setup_page)
@@ -44,17 +55,26 @@ async def test_purchase_with_account(setup_page, valid_billing_details, valid_cr
     product = ProductPage(setup_page)
     cart = CartSidebar(setup_page)
     checkout_page = CheckoutPage(setup_page)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
+    valid_billing_details.update({
+        "first_name": "team2",
+        "last_name": "team2",
+        "email": "team2@taqc.com",
+    })
 
     await home.navigate()
     await home.close_newsletter_popup()
     await navbar.navigate_to_account()
-    await loginpopup.fill_login_popup("team2@taqc.com", "team2")
+    await loginpopup.fill_login_form(valid_billing_details["email"], "team2")
     await loginpopup.submit_login_popup()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
     await product.selectProduct()
     await product.addingProduct(data.input_success)
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -63,17 +83,21 @@ async def test_purchase_with_account(setup_page, valid_billing_details, valid_cr
     APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_purchase_product_without_account(setup_page, valid_billing_details, valid_credit_card_info):
+async def test_purchase_product_without_account(setup_page):
     home = AutomationPortal(setup_page)
     product = ProductPage(setup_page)
     cart = CartSidebar(setup_page)
     checkout_page = CheckoutPage(setup_page)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
 
     await home.navigate()
     await home.close_newsletter_popup()
     await product.selectProduct()
     await product.addingProduct(data.input_success)
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -82,7 +106,7 @@ async def test_purchase_product_without_account(setup_page, valid_billing_detail
     APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_add_two_product_remove_one(setup_page, valid_billing_details, valid_credit_card_info):
+async def test_add_two_products_remove_one(setup_page):
     home = AutomationPortal(setup_page)
     navbar = Navbar(setup_page)
     loginpopup= LoginPopup(setup_page)
@@ -90,11 +114,18 @@ async def test_add_two_product_remove_one(setup_page, valid_billing_details, val
     product = ProductPage(setup_page)
     cart = CartSidebar(setup_page)
     checkout_page = CheckoutPage(setup_page)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
+    valid_billing_details.update({
+        "first_name": "team2",
+        "last_name": "team2",
+        "email": "team2@taqc.com",
+    })
 
     await home.navigate()
     await home.close_newsletter_popup()
     await navbar.navigate_to_account()
-    await loginpopup.fill_login_popup("team2@taqc.com", "team2")
+    await loginpopup.fill_login_popup(valid_billing_details["email"], "team2")
     await loginpopup.submit_login_popup()
     await navbar.navigate_to_home()
     await home.close_newsletter_popup()
@@ -106,6 +137,8 @@ async def test_add_two_product_remove_one(setup_page, valid_billing_details, val
     await product.addingSecondProduct()
     await cart.remove_product_from_cart()
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(2)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -114,19 +147,23 @@ async def test_add_two_product_remove_one(setup_page, valid_billing_details, val
     APIHelper.validate_order(order_id, valid_billing_details | valid_credit_card_info)
 
 @pytest.mark.asyncio(loop_scope="module")
-async def test_add_two_products_separate_instances(setup_session, valid_billing_details, valid_credit_card_info):
+async def test_add_two_products_separate_instances(setup_session):
     home = AutomationPortal(setup_session)
     navbar = Navbar(setup_session)
     navbar = Navbar(setup_session)
     product = ProductPage(setup_session)
     cart = CartSidebar(setup_session)
     checkout_page = CheckoutPage(setup_session)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
 
     await home.navigate()
     await home.close_newsletter_popup()
     await product.selectProduct()
     await product.addingProduct(data.input_success)
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -135,6 +172,8 @@ async def test_add_two_products_separate_instances(setup_session, valid_billing_
     await home.close_newsletter_popup()
     await product.addingSecondProduct()
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(2)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(**valid_credit_card_info)
@@ -148,12 +187,16 @@ async def test_wrong_card_information(setup_session, valid_billing_details, vali
     product = ProductPage(setup_session)
     cart = CartSidebar(setup_session)
     checkout_page = CheckoutPage(setup_session)
+    valid_billing_details = load_json("valid_billing_details.json")
+    valid_credit_card_info = load_json("valid_credit_card_info.json")
 
     await home.navigate()
     await home.close_newsletter_popup()
     await product.selectProduct()
     await product.addingProduct(data.input_success)
     await cart.go_to_checkout()
+    await expect(checkout_page.cart_items).to_have_count(1)
+    await expect(checkout_page.cart_item_titles.first).to_have_text("RAD The Beverly Pickleball Paddle")
     await checkout_page.fill_billing_details(**valid_billing_details)
     await checkout_page.apply_discount_code("TESTDISCOUNT")
     await checkout_page.fill_credit_card_info(card_number="1234567890123456", expiry="12/26", cvc="123")

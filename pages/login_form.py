@@ -5,6 +5,7 @@ class LoginForm:
         self.page = page
         
     async def fill_login_form(self, email: str, password: str):
+        await expect(self.page.locator("input#loginEmail")).to_be_visible(timeout=5000)
         await self.page.fill("input#loginEmail", email)
         await self.page.fill("input#loginPassword", password)
         await self.page.wait_for_timeout(1000)

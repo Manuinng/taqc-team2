@@ -52,7 +52,7 @@ pipeline {
                         checksPublish(
                             name: 'Pruebas Automatizadas',
                             conclusion: conclusion,
-                            title: 'Resultado de tests en PR #' + PR_NUMBER,
+                            title: 'Test Result',
                             summary: conclusion == 'SUCCESS' ? '✅ Todas las pruebas pasaron.' : '❌ Fallaron algunas pruebas.'
                         )
                     }

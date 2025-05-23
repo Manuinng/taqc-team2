@@ -58,7 +58,7 @@ pipeline {
                             conclusion: conclusion,
                             title: 'Test Result',
                             summary: conclusion == 'SUCCESS' ? '✅ All the test pass.' : '❌ Some test failed.',
-                            commit: params.COMMIT_SHA
+                            commitSha: params.COMMIT_SHA
                         )
                     }
                 }

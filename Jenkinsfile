@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+    string(name: 'COMMIT_SHA', defaultValue: '', description: 'SHA del commit a reportar')
+    }
+
     environment {
         GITHUB_APP = credentials('github-checks-app') 
         REPO = 'Manuinng/ecomus'                  
@@ -50,10 +54,11 @@ pipeline {
                         def conclusion = testFailed ? 'FAILURE' : 'SUCCESS'
 
                         publishChecks(
-                            name: 'Pruebas Automatizadas',
+                            name: 'Automated-tests',
                             conclusion: conclusion,
                             title: 'Test Result',
-                            summary: conclusion == 'SUCCESS' ? '✅ Todas las pruebas pasaron.' : '❌ Fallaron algunas pruebas.'
+                            summary: conclusion == 'SUCCESS' ? '✅ All the test pass.' : '❌ Some test failed.'
+                            commit: params.COMMIT_SHA
                         )
                     }
                 }

@@ -49,7 +49,7 @@ pipeline {
 
                         def conclusion = testFailed ? 'FAILURE' : 'SUCCESS'
 
-                        checksPublish(
+                        publishChecks(
                             name: 'Pruebas Automatizadas',
                             conclusion: conclusion,
                             title: 'Test Result',

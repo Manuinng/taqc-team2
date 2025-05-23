@@ -57,7 +57,7 @@ pipeline {
                             name: 'Automated-tests',
                             conclusion: conclusion,
                             title: 'Test Result',
-                            summary: conclusion == 'SUCCESS' ? '✅ All the test pass.' : '❌ Some test failed.'
+                            summary: conclusion == 'SUCCESS' ? '✅ All the test pass.' : '❌ Some test failed.',
                             commit: params.COMMIT_SHA
                         )
                     }

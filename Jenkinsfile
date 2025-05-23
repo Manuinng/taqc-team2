@@ -5,16 +5,16 @@ pipeline {
     string(name: 'COMMIT_SHA', defaultValue: '', description: 'SHA del commit a reportar')
     }
 
-    environment {
-        GITHUB_APP = credentials('github-checks-app') 
-        REPO = 'Manuinng/ecomus'                  
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                script {
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: params.COMMIT_SHA]],
+                        userRemoteConfigs: scm.userRemoteConfigs
+                    ])
+                }
             }
         }
 
@@ -42,25 +42,6 @@ pipeline {
             post {
                 always {
                     junit 'results.xml'
-                    script {
-                        def testFailed = false
-                        def resultXml = readFile 'results.xml'
-                        if (resultXml.contains('failures="0"') && resultXml.contains('errors="0"')) {
-                            testFailed = false
-                        } else {
-                            testFailed = true
-                        }
-
-                        def conclusion = testFailed ? 'FAILURE' : 'SUCCESS'
-
-                        publishChecks(
-                            name: 'Automated-tests',
-                            conclusion: conclusion,
-                            title: 'Test Result',
-                            summary: conclusion == 'SUCCESS' ? '✅ All the test pass.' : '❌ Some test failed.',
-                            commitSha: params.COMMIT_SHA
-                        )
-                    }
                 }
             }
         }

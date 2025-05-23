@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        GITHUB_APP = credentials('github-checks-app') 
+        REPO = 'Manuinng/ecomus'                  
+    }
+
     stages {
 
         stage('Checkout') {
@@ -33,6 +38,24 @@ pipeline {
             post {
                 always {
                     junit 'results.xml'
+                    script {
+                        def testFailed = false
+                        def resultXml = readFile 'results.xml'
+                        if (resultXml.contains('failures="0"') && resultXml.contains('errors="0"')) {
+                            testFailed = false
+                        } else {
+                            testFailed = true
+                        }
+
+                        def conclusion = testFailed ? 'FAILURE' : 'SUCCESS'
+
+                        checksPublish(
+                            name: 'Pruebas Automatizadas',
+                            conclusion: conclusion,
+                            title: 'Resultado de tests en PR #' + PR_NUMBER,
+                            summary: conclusion == 'SUCCESS' ? '✅ Todas las pruebas pasaron.' : '❌ Fallaron algunas pruebas.'
+                        )
+                    }
                 }
             }
         }

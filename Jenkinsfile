@@ -9,12 +9,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                script {
-                    checkout([$class: 'GitSCM', 
-                        branches: [[name: params.COMMIT_SHA]],
-                        userRemoteConfigs: scm.userRemoteConfigs
-                    ])
-                }
+                Checkout scm
             }
         }
 

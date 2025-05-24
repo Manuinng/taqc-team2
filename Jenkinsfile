@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-    string(name: 'COMMIT_SHA', defaultValue: '', description: 'SHA from the commit to use')
-    }
-
     stages {
 
         stage('Checkout') {
@@ -37,12 +33,7 @@ pipeline {
             post {
                 always {
                     junit 'results.xml'
-
-                    publishGitHubChecks checkName: 'Automated-tests',
-                                        commitSha: params.COMMIT_SHA,
-                                        status: 'COMPLETED',
-                                        conclusion: currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE',
-                                        testResultsFiles: 'results.xml'
+                    archiveArtifacts artifacts: 'results.xml', fingerprint: true
                 }
             }
         }

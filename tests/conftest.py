@@ -31,25 +31,21 @@ async def browser(request) -> AsyncGenerator[Browser, None]:
         await browser.close()
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def cart_valid_data() -> Dict:
-    return load_json("cart_valid_data.json")
-
-@pytest_asyncio.fixture(loop_scope="module")
-async def setup_checkout(browser, session: List[Cookie], cart_valid_data: Dict[str, Any]) -> Tuple[CheckoutPage, Dict[str, Any]]:
+async def setup_checkout(browser, session: List[Cookie]) -> CheckoutPage:
     context = await browser.new_context()
-    checkout_valid_data = load_json("checkout_valid_data.json")
 
     await context.add_cookies(session)
-    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({cart_valid_data}))")
+    valid_cart_data = load_json("valid_cart_data.json")
+    await context.add_init_script(f"localStorage.setItem('cartList', JSON.stringify({valid_cart_data}))")
 
     page = await context.new_page()
     checkout_page = CheckoutPage(page)
     await checkout_page.navigate()
 
-    return checkout_page, checkout_valid_data
+    return checkout_page
 
 @pytest_asyncio.fixture(loop_scope="module")
-async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
+async def setup_session(browser, session: List[Cookie]) -> Tuple[Page]:
     context = await browser.new_context()
     await context.add_cookies(session)
     page = await context.new_page()
@@ -59,9 +55,9 @@ async def setup_product(browser, session: List[Cookie]) -> Tuple[Page]:
 async def setup_e2e(browser) -> AsyncGenerator[Page, None]:
     page = await browser.new_page()
     yield page
-    user_id = APIHelper.get_user_id("test9999@example.com")
-    assert user_id
-    assert APIHelper.delete_user(user_id)
+    user_id = APIHelper.get_user_id("temp_team2@example.com")
+    if user_id:
+        APIHelper.delete_user(user_id)
 
 @pytest_asyncio.fixture(loop_scope="module")
 async def setup_page(browser) -> AsyncGenerator[Page, None]:

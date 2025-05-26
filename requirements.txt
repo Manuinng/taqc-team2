@@ -12,7 +12,6 @@ pyee==12.1.1
 pytest==8.3.5
 pytest-asyncio==0.26.0
 pytest-base-url==2.1.0
-pytest-csv-params==1.2.0
 pytest-playwright==0.7.0
 python-slugify==8.0.4
 requests==2.32.3

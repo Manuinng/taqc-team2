@@ -1,12 +1,12 @@
 from playwright.async_api import Page, expect
-import re
 import asyncio
+from config.config import BASE_URL
 
 class ProductPage:
     def __init__(self ,page:Page):
         self.page = page
         self.itemProductSelection = page.locator("#wrapper > div > section:nth-child(6) > div.tf-grid-layout.tf-col-2.md-col-3.gap-0.home-pckaleball-page")
-        self.btnColor = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(1) > form > label:nth-child(4) > span.btn-checkbox.bg-color-black")
+        self.selectorbtnColor = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(1)")
         self.btnSize = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-variant-picker > div:nth-child(2) > form > label:nth-child(6)")
         self.moreQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > span.btn-quantity.plus-btn")
         self.lessQuantity = page.locator("#wrapper > section:nth-child(3) > div.tf-main-product.section-image-zoom > div > div > div:nth-child(2) > div > div.tf-product-info-list.other-image-zoom > div.tf-product-info-quantity > div.wg-quantity > span.btn-quantity.minus-btn")
@@ -27,8 +27,8 @@ class ProductPage:
         self.gridColoritem = page.locator("#compare_color > div > div > div.tf-compare-color-wrapp > div")
 
     async def selectColor(self): #Button for color selection
-        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
-        await self.btnColor.click()
+        await expect(self.selectorbtnColor.locator("form > label:nth-child(4) > span.btn-checkbox.bg-color-black"),"The button for selection of color is not visible").to_be_visible()
+        await self.selectorbtnColor.locator("form > label:nth-child(4) > span.btn-checkbox.bg-color-black").click()
 
     async def selectSize(self): #Button for size selection
         await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
@@ -58,9 +58,9 @@ class ProductPage:
         await self.itemProductSelection.locator("div:nth-child(5) > div.card-product-wrapper > a").click()
 
     async def addingProduct(self, input_test:str): #Flow for selection of product options and add to cart 
-        await self.btnColor.wait_for(state='visible')
-        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
-        await self.btnColor.click()
+        await self.selectorbtnColor.locator("form > label:nth-child(4) > span.btn-checkbox.bg-color-black").wait_for(state='visible')
+        await expect(self.selectorbtnColor.locator("form > label:nth-child(4) > span.btn-checkbox.bg-color-black"),"The button for selection of color is not visible").to_be_visible()
+        await self.selectorbtnColor.locator("form > label:nth-child(4) > span.btn-checkbox.bg-color-black").click()
         await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
         await self.btnSize.click()
         await expect(self.inputQuantity,"The input for quantity is not visible").to_be_visible()
@@ -114,7 +114,7 @@ class ProductPage:
         await self.btnWish.click()
         await expect(self.btnNavwish,"The button for the wishlist is not visible").to_be_visible()
         await self.btnNavwish.click()
-        await expect(self.page, "The page was not redirected to categories.").to_have_url(re.compile(r".*/wishlist"))
+        await expect(self.page, "The page was not redirected to categories.").to_have_url(f"{BASE_URL}/wishlist")
 
     async def get_information_cart(self): #Know if the cart have the item added
         cart_product_visible = self.page.locator("#shoppingCart > div > div > div.wrap > div.tf-mini-cart-wrap > div.tf-mini-cart-main > div > div.tf-mini-cart-items > div")
@@ -150,10 +150,10 @@ class ProductPage:
         discount_price_text = self.discount_price
         return discount_price_text
 
-    async def addingSecondProduct(self):
+    async def addingSecondProduct(self): #Flow for selection of second product
         await self.itemProductSelection.locator("div:nth-child(1) > div.card-product-wrapper > a").click()
-        await expect(self.btnColor,"The button for selection of color is not visible").to_be_visible()
-        await self.btnColor.click()
+        await expect(self.selectorbtnColor.locator("form > label:nth-child(6) > span.btn-checkbox.bg-color-blue"),"The button for selection of color is not visible").to_be_visible()
+        await self.selectorbtnColor.locator("form > label:nth-child(6) > span.btn-checkbox.bg-color-blue").click()
         await expect(self.btnSize,"The button for selection of size is not visible").to_be_visible()
         await self.btnSize.click()
         await expect(self.inputQuantity,"The input for quantity is not visible").to_be_visible()

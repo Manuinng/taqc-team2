@@ -38,6 +38,8 @@ The project's folder structure is as follows:
 │   │   └── (Files with JSON, CSV and data)
 │   └── utils
 │       └── (shared utilities for the test)
+├────────── Dockerfile
+└────────── Jenkinsfile
 ```
 
 * `pages`: Contains the Page Object Models (POMs) for the website's pages and components. These POMs encapsulate page-specific interactions, making our tests modular and maintainable.

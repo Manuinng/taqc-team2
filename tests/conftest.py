@@ -55,7 +55,7 @@ async def setup_session(browser, session: List[Cookie]) -> Tuple[Page]:
 async def setup_e2e(browser) -> AsyncGenerator[Page, None]:
     page = await browser.new_page()
     yield page
-    user_id = APIHelper.get_user_id("test9999@example.com")
+    user_id = APIHelper.get_user_id("temp_team2@example.com")
     if user_id:
         APIHelper.delete_user(user_id)
 

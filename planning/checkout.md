@@ -11,6 +11,7 @@
 - [Test Case 7: Validate only logged in users can access the checkout page](#test-case-7-validate-only-logged-in-users-can-access-the-checkout-page)
 - [Test Case 8: Validate user can't access the checkout page with an empty cart](#test-case-8-validate-user-cant-access-the-checkout-page-with-an-empty-cart)
 - [Test Case 9: Validate placed order data matches the data submitted in the checkout form](#test-case-9-validate-placed-order-data-matches-the-data-submitted-in-the-checkout-form)
+- [Test Case 10: Validate displayed products match cart contents](#test-case-10-validate-displayed-products-match-cart-contents)
 
 ## Test Case 1: Validate successful form submission with valid data
 
@@ -102,7 +103,7 @@ Verify checkout form is not submitted if any required field is empty
 2. Fill in all other fields with valid data
 3. Attempt to submit the form
 
-#### Expected Result (for all tests)
+#### Expected Result
 
 Order placement is rejected by the website and the empty field is highlighted with an error message mentioning the field is required
 
@@ -289,3 +290,32 @@ Verify the order placed in the API matches the order sent with the checkout form
 ### Expected Result
 
 Data retrieved from API matches the data used to fill the form and the data of the cart items
+
+## Test Case 10: Validate displayed products match cart contents
+
+### Objective
+Verify displayed products at checkout page match the cart contents
+
+### Preconditions
+- User is on the checkout page
+- User is logged in
+
+### Test Case 10.1: Validate product count
+1. Load cart data with one product
+2. Verify only one product is displayed in the "your order" section
+
+### Test Case 10.2: Validate product title
+1. Load cart data with one product
+2. Verify the displayed product title in the "your order" section is the correct title
+
+### Test Case 10.3: Validate product quantity
+1. Load cart data with one product
+2. Verify the displayed product quantity in the "your order" section is the correct quantity
+
+### Test Case 10.4: Validate product variant
+1. Load cart data with one product
+2. Verify the displayed product variant in the "your order" section is the correct variant (size and/or color)
+
+### Expected Result
+
+The displayed information in the "your order" section matches the information of the products that are in the cart

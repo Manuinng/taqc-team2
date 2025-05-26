@@ -28,11 +28,12 @@ pipeline {
         stage('Test') {
             steps {
                 sh """. ../venv/bin/activate
-                pytest --junitxml=results.xml"""
+                pytest --junitxml=results-${BUILD_NUMBER}.xml"""
             }
             post {
                 always {
-                    junit 'results.xml'
+                    junit "results-${BUILD_NUMBER}.xml"
+                    archiveArtifacts artifacts: "results-${BUILD_NUMBER}.xml", fingerprint: true
                 }
             }
         }

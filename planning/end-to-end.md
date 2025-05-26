@@ -1,18 +1,18 @@
-## End-To-End Planning
+# End-To-End Planning
 
 ## Table of Contents
 
-- [Test Case 1: Success Order PLace with registration in the website](#test-case-1-success-order-place-with-registration-in-the-website)
-- [Test Case 2: Place an order with an user that have account](#test-case-2-place-an-order-with-an-user-that-have-account)
-- [Test Case 3: Place an order with an user that isn't Login](#test-case-3-place-an-order-with-an-user-that-isnt-login)
-- [Test Case 4: Select different product but eliminate one in the last check](#test-case-4-select-different-product-but-eliminate-one-in-the-last-check)
-- [Test Case 5: Add two products in separate instance](#test-case-5-add-two-products-in-separate-instance)
-- [Test Case 6: Customer input invalid information for the card details](#test-case-6-customer-input-invalid-information-for-the-card-details)
+- [Test Case 1: New user registers and successfully places an order](#test-case-1-new-user-registers-and-successfully-places-an-order)
+- [Test Case 2: Existing user logs in and places an order](#test-case-2-existing-user-logs-in-and-places-an-order)
+- [Test Case 3: User places an order without being logged in](#test-case-3-user-places-an-order-without-being-logged-in)
+- [Test Case 4: User adds product to cart then replaces it with another product](#test-case-4-user-adds-product-to-cart-then-replaces-it-with-another-product)
+- [Test Case 5: User adds two different products in separate instances](#test-case-5-user-adds-two-different-products-in-separate-instances)
+- [Test Case 6: User enters wrong credit card number then corrects it](#test-case-6-user-enters-wrong-credit-card-number-then-corrects-it)
 
-### Test Case 1: Success Order PLace with registration in the website
+### Test Case 1: New user registers and successfully places an order
 
 #### Objective
-Verify the flow for a new customer with the registration, login, selection of product and the place an order.
+Verify the user flow for a new customer making a purchase, going through registration, login, product selection and placing an order.
 
 #### Preconditions
 - User is on Home Page
@@ -33,16 +33,16 @@ Verify the flow for a new customer with the registration, login, selection of pr
 13. Place the order
 
 #### Expected Result
-The order is created and validate
+The order is created correctly and validated with the backend API
 
-### Test Case 2: Place an order with an user that have account
+### Test Case 2: Existing user logs in and places an order
 
 #### Objective
-Verify the flow for a customer already register.
+Verify the user flow for an existing customer making a purchase, going through login, product selection and placing an order.
 
 #### Preconditions
 - User is on Home Page
-- User have an account
+- User has an account
 
 #### Test Steps
 1. Select the account icon 
@@ -57,16 +57,16 @@ Verify the flow for a customer already register.
 10. Place the order
 
 #### Expected Result
-The order is created and validate for the account
+The order is created correctly and validated with the backend API
 
-### Test Case 3: Place an order with an user that isn't Login 
+### Test Case 3: User places an order without being logged in
 
 #### Objective
-Verify the flow for a customer that isn't Login
+Verify the user flow for a customer that is making a purchase without logging in, going through product selection and placing an order.
 
 #### Preconditions
 - User is on Home Page
-- User isn't login
+- User isn't logged in
 
 #### Test Steps
 1. Select a product
@@ -78,16 +78,16 @@ Verify the flow for a customer that isn't Login
 7. Place the order
 
 #### Expected Result
-The order is created and validate but without the account
+The order is created correctly and validated with the backend API
 
-### Test Case 4: Select different product but eliminate one in the last check
+### Test Case 4: User adds product to cart then replaces it with another product
 
 #### Objective
-Verify the flow for a customer that have not decide clearly what buy
+Verify the user flow for a customer that at first is going to purchase a product, but then changes his/her mind and decides to purchase a different product instead, removing the first product from the cart.
 
 #### Preconditions
 - User is on Home Page
-- User have an account
+- User has an account
 
 #### Test Steps
 1. Select the account icon 
@@ -107,16 +107,16 @@ Verify the flow for a customer that have not decide clearly what buy
 15. Place the order
 
 #### Expected Result
-The order is created and validate for the account
+The order is created correctly and validated with the backend API
 
-### Test Case 5: Add two products in separate instance
+### Test Case 5: User adds two different products in separate instances
 
 #### Objective
-Verify when a customer try to buy a product but in the middle of the checkout want to add another product too
+Verify the user flow for a customer that at first is going to purchase a product, but then before placing an order decides to go back and add another product to the cart, purchasing 2 different products in 1 order.
 
 #### Preconditions
 - User is on Home Page
-- User is Login
+- User is logged in
 
 #### Test Steps
 1. Select a product
@@ -134,16 +134,16 @@ Verify when a customer try to buy a product but in the middle of the checkout wa
 13. Place the order
 
 #### Expected Result
-The order is created and validate the products
+The order is created correctly and validated with the backend API
 
-### Test Case 6: Customer input invalid information for the card details
+### Test Case 6: User enters wrong credit card number then corrects it
 
 #### Objective
-Verify when a customer put wrong information in the card details
+Verify the user flow for a customer that is making a purchase but enters wrong credit card information in the checkout form, but then corrects it and completes the purchase.
 
 #### Preconditions
 - User is on Home Page
-- User is Login
+- User is logged in
 
 #### Test Steps
 1. Select a product
@@ -157,4 +157,4 @@ Verify when a customer put wrong information in the card details
 9. Place the order
 
 #### Expected Result
-The order is created and validate the card information
+The order is not placed with the wrong credit card number at first, but then once the correct number is entered the order is placed correctly and validated with the backend API
